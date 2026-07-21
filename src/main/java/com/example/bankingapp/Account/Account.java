@@ -1,4 +1,4 @@
-package com.example.demo.Account;
+package com.example.bankingapp.Account;
 
 
 import com.example.bankingapp.User.User;
