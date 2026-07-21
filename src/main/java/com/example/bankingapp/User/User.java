@@ -1,7 +1,7 @@
 package com.example.bankingapp.User;
 
 
-import com.example.demo.Account.Account;
+import com.example.bankingapp.Account.Account;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
@@ -24,12 +24,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @Getter
     private Long id;
 
     @Getter
     @Setter
     @Column(name = "email")
     private String email;
+
     @Column(name = "password")
     private String password;
 
@@ -52,9 +54,6 @@ public class User {
     private LocalDate dateOfBirth;
 
     @Getter
-    @NotNull(message = "Credit score must be calculated before saving")
-    @Min(value = 300, message = "Credit score can't be below 300")
-    @Max(value = 850, message = "Credit score can't be over 850")
     @Column(name = "credit_score")
     private Integer creditScore;
 
@@ -78,10 +77,12 @@ public class User {
     protected User() {
 
     }
-    public User(String email, String password, String username, LocalDate dateOfBirth, int creditScore) {
+    public User(String email, String password, String username, String firstName, String lastName, LocalDate dateOfBirth, int creditScore) {
         this.email = email;
         this.password = password;
         this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.creditScore=creditScore;
     }

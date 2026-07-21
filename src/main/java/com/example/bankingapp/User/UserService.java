@@ -4,9 +4,8 @@ package com.example.bankingapp.User;
 
 import com.example.bankingapp.User.DTOs.UserRequest;
 import com.example.bankingapp.User.DTOs.UserResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 
 
 @Service
@@ -38,5 +37,12 @@ public class UserService {
 
     }
 
+    @Transactional
+    public void replaceUser(Long id, UserRequest request) {
+        User currentUser = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        userMapper.updateEntityFromDto(request, currentUser);
+        userRepository.save(currentUser);
 
+
+    }
 }
