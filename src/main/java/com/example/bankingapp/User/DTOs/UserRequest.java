@@ -12,20 +12,19 @@ public record UserRequest(
         String email,
 
         @Size(min = 3, max = 15, message = "Username must be between 3 and 15 characters")
-        @Column(nullable = false, unique = true)
         String username,
 
         //@CheckPassword
-        @Column(nullable = false)
+        @NotBlank
         String password,
 
-        @Column(nullable = false)
+        @NotNull
         LocalDate dateOfBirth,
 
-        @Column(nullable = false)
+        @NotBlank
         String firstName,
 
-        @Column(nullable = false)
+        @NotBlank
         String lastName,
 
         @NotNull(message = "Credit score must be calculated before saving")

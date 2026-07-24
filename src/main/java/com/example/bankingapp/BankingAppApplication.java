@@ -11,3 +11,4 @@ public class BankingAppApplication {
 	}
 
 }
+///v3/api-doc   /swagger-ui.html

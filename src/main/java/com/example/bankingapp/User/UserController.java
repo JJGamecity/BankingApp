@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/create-user")
+    @PostMapping("/create")
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest request) {
         UserResponse response = userService.createUser(request);
         URI location = URI.create("/users/" + response.id());
