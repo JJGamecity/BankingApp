@@ -32,6 +32,7 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
+    @Getter
     @Column(name = "password")
     private String password;
 

@@ -28,10 +28,20 @@ public class AccountController {
         return ResponseEntity.created(location).body(response);
     }
 
+    @PutMapping
+    public ResponseEntity<Void> changeAccount(Long id, @Valid @RequestBody AccountRequest request) {
+
+        accountService.changeAccount(id,request);
+        return ResponseEntity.noContent().build();
+
+    }
+
     @GetMapping("/user-{id}")
     public ResponseEntity<List<AccountResponse>> getAccounts(@PathVariable Long id)
     {
         List<AccountResponse> accountsList = accountService.getAccounts(id);
         return ResponseEntity.ok().body(accountsList);
     }
+
+
 }

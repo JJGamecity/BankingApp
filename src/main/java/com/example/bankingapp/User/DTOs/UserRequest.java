@@ -9,13 +9,17 @@ public record UserRequest(
 
         @Column(nullable = false, unique = true)
         @Email(message="This is not a proper email.")
+        @NotBlank
         String email,
 
+
+        @NotBlank
         @Size(min = 3, max = 15, message = "Username must be between 3 and 15 characters")
         String username,
 
         //@CheckPassword
         @NotBlank
+        @Size(min = 15, max = 72)
         String password,
 
         @NotNull
@@ -33,7 +37,8 @@ public record UserRequest(
         Integer creditScore
 
 ) {
-
-
-
+    @AssertTrue(message = "Password must be at most 72 UTF-8 bytes")
+    public boolean isPasswordWithinByteLimit() {
+        return password == null || password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72;
+    }
 }

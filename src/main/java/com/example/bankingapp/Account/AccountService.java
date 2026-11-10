@@ -2,7 +2,6 @@ package com.example.bankingapp.Account;
 
 import com.example.bankingapp.Account.Dtos.AccountRequest;
 import com.example.bankingapp.Account.Dtos.AccountResponse;
-import com.example.bankingapp.Account.AccountMapper;
 import com.example.bankingapp.User.User;
 import com.example.bankingapp.User.UserNotFoundException;
 import com.example.bankingapp.User.UserRepository;
@@ -39,10 +38,15 @@ public class AccountService {
     }
     public List<AccountResponse> getAccounts(Long id) {
         List<Account> accountList = accountRepository.findByUserId(id);
-        List<AccountResponse> accountResponses = new ArrayList<AccountResponse>();
-        for(Account account : accountList) {
-            accountResponses.add(accountMapper.toResponseDto(account));
-        }
-        return accountResponses;
+        return accountList.stream().map(accountMapper::toResponseDto).toList();
+    }
+
+    public void changeAccount( Long id, AccountRequest request) {
+
+        Account account = accountRepository.findById(id).orElseThrow(() -> new AccountNotFoundException(id));
+        accountMapper.updateEntityFromDto(request, account);
+        accountRepository.save(account);
+
+
     }
 }
