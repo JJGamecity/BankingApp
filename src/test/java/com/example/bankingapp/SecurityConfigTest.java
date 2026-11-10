@@ -299,7 +299,7 @@ class SecurityConfigTest {
         var token = (CsrfToken) loginPage.getRequest().getAttribute(CsrfToken.class.getName());
         mvc.perform(post("/login").session(session).header(token.getHeaderName(), token.getToken())
                         .param("username", "customer").param("password", "test-password"))
-                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/accounts/user-1"));
+                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/accounts/me"));
         assertNotEquals(oldId, session.getId());
         mvc.perform(get("/accounts/user-1").session(session)).andExpect(status().isOk());
         var csrfResult = mvc.perform(get("/csrf").session(session)).andReturn();
@@ -318,6 +318,52 @@ class SecurityConfigTest {
         storedStaff.put("stored.admin", new StaffAccount("stored.admin", passwordEncoder.encode("stored-password"), StaffRole.ADMIN));
         assertTrue(details.loadUserByUsername("stored.admin").getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN")));
+    }
+
+    @Test
+    void myAccountsReturnsBankingDetailsAndIgnoresSuppliedOwnerId() throws Exception {
+        when(accountService.getAccounts(1L)).thenReturn(List.of(
+                new AccountResponse(10L, 1L, com.example.bankingapp.Account.AccountType.CHECKING,
+                        "1000000001", "91000019", new java.math.BigDecimal("1250.75")),
+                new AccountResponse(11L, 1L, com.example.bankingapp.Account.AccountType.SAVINGS,
+                        "1000000002", "91000019", new java.math.BigDecimal("5000.00"))));
+        mvc.perform(get("/accounts/me").param("userId", "2").param("id", "2")
+                        .header("Authorization", basic("customer", "test-password")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].userId").value(1))
+                .andExpect(jsonPath("$[0].accountNumber").value("1000000001"))
+                .andExpect(jsonPath("$[0].routingNumber").value("91000019"))
+                .andExpect(jsonPath("$[0].availableBalance").value(1250.75))
+                .andExpect(jsonPath("$[1].accountType").value("SAVINGS"))
+                .andExpect(header().string("Cache-Control", org.hamcrest.Matchers.containsString("no-store")));
+        verify(accountService).getAccounts(1L);
+        verify(accountService, never()).getAccounts(2L);
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void myAccountsUsesEachCustomersIdentityAndReturnsEmptyListWhenNoAccounts() throws Exception {
+        var second = mock(com.example.bankingapp.User.User.class);
+        when(second.getId()).thenReturn(2L);
+        when(second.getUsername()).thenReturn("second.customer");
+        when(second.getPassword()).thenReturn(passwordEncoder.encode("second-password"));
+        when(userRepository.findByUsername("second.customer")).thenReturn(Optional.of(second));
+        when(accountService.getAccounts(2L)).thenReturn(List.of());
+        mvc.perform(get("/accounts/me").header("Authorization", basic("second.customer", "second-password")))
+                .andExpect(status().isOk()).andExpect(content().json("[]"));
+        verify(accountService).getAccounts(2L);
+        verify(accountService, never()).getAccounts(1L);
+    }
+
+    @Test
+    void myAccountsRequiresCustomerLogin() throws Exception {
+        mvc.perform(get("/accounts/me").accept("application/json")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/accounts/me").header("Authorization", basic("representative", "test-password")))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/accounts/me").header("Authorization", basic("admin", "admin-password")))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(accountService);
     }
 
     private MockHttpServletRequestBuilder withToken(MockHttpServletRequestBuilder request) throws Exception {

@@ -2,6 +2,9 @@ package com.example.bankingapp.Account;
 
 import com.example.bankingapp.Account.Dtos.AccountRequest;
 import com.example.bankingapp.Account.Dtos.AccountResponse;
+import com.example.bankingapp.CustomerPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.validation.Valid;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,13 @@ public class AccountController {
     private final AccountService accountService;
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<List<AccountResponse>> getMyAccounts(
+            @AuthenticationPrincipal CustomerPrincipal customer) {
+        return ResponseEntity.ok(accountService.getAccounts(customer.getUserId()));
     }
 
     @PostMapping

@@ -36,6 +36,7 @@ public class AccountService {
         accountRepository.save(account);
         return accountMapper.toResponseDto(account);
     }
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<AccountResponse> getAccounts(Long id) {
         List<Account> accountList = accountRepository.findByUserId(id);
         return accountList.stream().map(accountMapper::toResponseDto).toList();

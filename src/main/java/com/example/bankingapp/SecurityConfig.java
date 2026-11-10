@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/staff", "/staff/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.GET, "/csrf").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/accounts/me").hasRole(CUSTOMER)
                         .requestMatchers(HttpMethod.GET, "/accounts/user-{id}")
                         .access((authentication, context) -> {
                             var auth = authentication.get();
@@ -55,7 +56,7 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(form -> form.permitAll().successHandler((request, response, authentication) -> {
                     String destination = authentication.getPrincipal() instanceof CustomerPrincipal customer
-                            ? "/accounts/user-" + customer.getUserId() : "/users";
+                            ? "/accounts/me" : "/users";
                     response.sendRedirect(request.getContextPath() + destination);
                 }))
                 .build();

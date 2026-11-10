@@ -141,6 +141,37 @@ Replace `1` with the actual customer ID. Supported account types are `CHECKING`,
 `GET /accounts/user-1` for their own ID. Changing the ID to another customer's
 returns `403`.
 
+## View your own accounts as a customer
+
+Sign in at `http://localhost:5050/login` using a customer's username and password.
+The browser redirects to `GET /accounts/me`, which returns that customer's accounts.
+In Postman, send **GET** `http://localhost:5050/accounts/me` with the customer's
+credentials under **Authorization > Basic Auth**. No body or CSRF token is needed
+for this read-only request.
+
+Example response (illustrative values):
+
+```json
+[
+  {
+    "id": 10,
+    "userId": 1,
+    "accountType": "CHECKING",
+    "accountNumber": "1000000001",
+    "routingNumber": "91000019",
+    "availableBalance": 1250.75
+  }
+]
+```
+
+The response includes all of the signed-in customer's accounts. A customer without
+accounts receives `[]`. The owner is determined by the authenticated identity;
+supplying a different `userId` or `id` query parameter cannot select another owner.
+The response does not include login credentials and is marked `no-store`.
+
+This endpoint is for customer identities. Admins and representatives use
+`GET /accounts/user-{id}` when viewing customer accounts.
+
 ## API endpoints
 
 Paths below are relative to `http://localhost:5050`.
@@ -154,6 +185,7 @@ Paths below are relative to `http://localhost:5050`.
 | `PUT` | `/users/{id}` | Update a customer | Admin / representative |
 | `POST` | `/accounts` | Create a bank account | Admin / representative |
 | `PUT` | `/accounts?id={accountId}` | Update a bank account | Admin / representative |
+| `GET` | `/accounts/me` | View own accounts, balances, and bank details | Customer |
 | `GET` | `/accounts/user-{id}` | List a customer's accounts | Admin / representative / owning customer |
 | `GET` | `/csrf` | Retrieve a CSRF token | Any authenticated user |
 | `GET` | `/login` | Browser login page | Public |

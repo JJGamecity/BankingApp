@@ -25,12 +25,18 @@ and bank accounts. Spring Security provides the public login page.
 | --- | --- |
 | BANK_REPRESENTATIVE | User and account commands; cannot create staff |
 | ADMIN | All application commands, including creating staff |
-| CUSTOMER | Only `GET /accounts/user-{id}` where `{id}` is their own database user ID |
+| CUSTOMER | `GET /accounts/me`, or `GET /accounts/user-{id}` for their own database user ID |
 
 All signed-in users can retrieve `/csrf` for authentication support. Customers
 cannot list users, view another customer's accounts, or create/update users or
 accounts. Their database ID is attached to the authenticated principal and checked
 before the account controller runs. Roles cannot be supplied in a customer request.
+
+`GET /accounts/me` derives the owner from the authenticated customer principal,
+without accepting an owner ID. It returns account numbers, routing numbers, types,
+and available balances using the existing account response DTO. Staff identities
+use the ID-based endpoint instead. The customer endpoint also checks its role at
+the controller method and retains Spring Security's no-store response headers.
 
 Customers sign in with the username and password of a customer record created by
 staff. New and replaced passwords are stored as BCrypt hashes. Existing plaintext
