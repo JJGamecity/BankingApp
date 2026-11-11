@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/staff", "/staff/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.GET, "/csrf").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/accounts/me").hasRole(CUSTOMER)
+                        .requestMatchers(HttpMethod.GET, "/users/me", "/accounts/me", "/accounts/me/{accountId}").hasRole(CUSTOMER)
                         .requestMatchers(HttpMethod.GET, "/accounts/user-{id}")
                         .access((authentication, context) -> {
                             var auth = authentication.get();

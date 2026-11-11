@@ -2,6 +2,8 @@ package com.example.bankingapp.User.DTOs;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
+import com.example.bankingapp.validation.ValidPassword;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 
@@ -17,9 +19,8 @@ public record UserRequest(
         @Size(min = 3, max = 15, message = "Username must be between 3 and 15 characters")
         String username,
 
-        //@CheckPassword
-        @NotBlank
-        @Size(min = 15, max = 72)
+        @ValidPassword
+        @Schema(description = ValidPassword.REQUIREMENTS, accessMode = Schema.AccessMode.WRITE_ONLY)
         String password,
 
         @NotNull
@@ -37,8 +38,4 @@ public record UserRequest(
         Integer creditScore
 
 ) {
-    @AssertTrue(message = "Password must be at most 72 UTF-8 bytes")
-    public boolean isPasswordWithinByteLimit() {
-        return password == null || password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72;
-    }
 }

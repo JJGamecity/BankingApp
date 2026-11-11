@@ -25,7 +25,7 @@ and bank accounts. Spring Security provides the public login page.
 | --- | --- |
 | BANK_REPRESENTATIVE | User and account commands; cannot create staff |
 | ADMIN | All application commands, including creating staff |
-| CUSTOMER | `GET /accounts/me`, or `GET /accounts/user-{id}` for their own database user ID |
+| CUSTOMER | Own profile at `/users/me`; own accounts at `/accounts/me`, `/accounts/me/{accountId}`, or `/accounts/user-{id}` |
 
 All signed-in users can retrieve `/csrf` for authentication support. Customers
 cannot list users, view another customer's accounts, or create/update users or
@@ -37,6 +37,13 @@ without accepting an owner ID. It returns account numbers, routing numbers, type
 and available balances using the existing account response DTO. Staff identities
 use the ID-based endpoint instead. The customer endpoint also checks its role at
 the controller method and retains Spring Security's no-store response headers.
+
+`GET /users/me` returns the authenticated customer's profile DTO without passwords.
+`GET /accounts/me/{accountId}` queries by both account ID and authenticated owner
+ID, and its service method also checks the customer role and principal ID.
+Unowned and nonexistent accounts both return `404`; invalid IDs return `400`.
+Customer account lists are ordered by account ID. No customer write permissions
+are added by these endpoints.
 
 Customers sign in with the username and password of a customer record created by
 staff. New and replaced passwords are stored as BCrypt hashes. Existing plaintext
@@ -76,9 +83,15 @@ As an ADMIN, send `POST http://localhost:5050/staff`:
 Use `"role": "ADMIN"` to create another administrator. `CUSTOMER` is not an
 accepted staff role; create customers through `POST /users`. Usernames must have
 3–50 letters, digits, dots, underscores, or hyphens. Passwords must have at least
-15 characters and at most 72 UTF-8 bytes. The same password length limits apply
-when creating or replacing customers. Existing hashes still work; the new policy
-applies when setting passwords.
+10 characters, include a special character (punctuation or a symbol, not just
+whitespace), and contain no ascending/descending sequence of three or more digits
+or English letters, ignoring letter case and intervening whitespace. Examples of
+rejected sequences include `123`, `321`, `abc`, and `1 2 3`. Passwords are limited
+to 72 UTF-8 bytes for BCrypt. First and last names are permitted if all other
+rules are met. A shared `@ValidPassword` constraint enforces this policy on staff
+creation and customer creation/replacement, with requirements in validation errors
+and Swagger. Existing hashes still work; configured initial logins are not signup
+requests and are not checked by this request validation policy.
 
 The response is `201 Created` with `id`, `username`, and `role`; it never includes
 the password or hash. Duplicate/reserved names return `409`; invalid fields or

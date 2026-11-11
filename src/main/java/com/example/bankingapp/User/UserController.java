@@ -3,6 +3,10 @@ package com.example.bankingapp.User;
 import com.example.bankingapp.Account.Dtos.AccountResponse;
 import com.example.bankingapp.User.DTOs.UserRequest;
 import com.example.bankingapp.User.DTOs.UserResponse;
+import com.example.bankingapp.CustomerPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
@@ -22,6 +26,13 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @Operation(summary = "View your customer profile", description = "Uses the signed-in customer's identity. Never returns passwords.")
+    public ResponseEntity<UserResponse> getMyProfile(@AuthenticationPrincipal CustomerPrincipal customer) {
+        return ResponseEntity.ok(userService.getUserById(customer.getUserId()));
     }
 
     @PostMapping

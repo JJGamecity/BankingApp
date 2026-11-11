@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,6 +86,7 @@ class SecurityConfigTest {
 
     @BeforeEach
     void setUp() {
+        accountService = org.springframework.test.util.AopTestUtils.getUltimateTargetObject(context.getBean(AccountService.class));
         mvc = MockMvcBuilders.webAppContextSetup(context).addFilters(securityFilter).build();
         reset(userRepository);
         reset(staffRepository);
@@ -364,6 +366,102 @@ class SecurityConfigTest {
         mvc.perform(get("/accounts/me").header("Authorization", basic("admin", "admin-password")))
                 .andExpect(status().isForbidden());
         verifyNoInteractions(accountService);
+    }
+
+    @Test
+    void customerProfileUsesLoginIdentityAndNeverReturnsPassword() throws Exception {
+        mvc.perform(get("/users/me").param("id", "2")
+                        .header("Authorization", basic("customer", "test-password")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.email").value("customer@example.com"))
+                .andExpect(jsonPath("$.password").doesNotExist())
+                .andExpect(header().string("Cache-Control", org.hamcrest.Matchers.containsString("no-store")));
+        verify(userService).getUserById(1L);
+        verify(userService, never()).getUserById(2L);
+    }
+
+    @Test
+    void customerCanReadSingleAccountUsingAuthenticatedOwner() throws Exception {
+        when(accountService.getCustomerAccount(10L, 1L)).thenReturn(new AccountResponse(10L, 1L,
+                com.example.bankingapp.Account.AccountType.CHECKING, "1000000001", "91000019", new java.math.BigDecimal("1250.75")));
+        mvc.perform(get("/accounts/me/10").param("userId", "2")
+                        .header("Authorization", basic("customer", "test-password")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.availableBalance").value(1250.75));
+        verify(accountService).getCustomerAccount(10L, 1L);
+        verify(accountService, never()).getCustomerAccount(10L, 2L);
+    }
+
+    @Test
+    void unownedOrMissingAccountReturnsNotFound() throws Exception {
+        when(accountService.getCustomerAccount(20L, 1L))
+                .thenThrow(new com.example.bankingapp.Account.AccountNotFoundException(20L));
+        mvc.perform(get("/accounts/me/20").header("Authorization", basic("customer", "test-password")))
+                .andExpect(status().isNotFound()).andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"0", "-1", "not-a-number", "999999999999999999999999"})
+    void invalidCustomerAccountIdReturnsBadRequest(String id) throws Exception {
+        mvc.perform(get("/accounts/me/" + id).header("Authorization", basic("customer", "test-password")))
+                .andExpect(status().isBadRequest());
+        verifyNoInteractions(accountService);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"/users/me", "/accounts/me/10"})
+    void customerEndpointsRejectAnonymousAndStaff(String path) throws Exception {
+        mvc.perform(get(path).accept("application/json")).andExpect(status().isUnauthorized());
+        mvc.perform(get(path).header("Authorization", basic("representative", "test-password")))
+                .andExpect(status().isForbidden());
+        mvc.perform(get(path).header("Authorization", basic("admin", "admin-password")))
+                .andExpect(status().isForbidden());
+        mvc.perform(withToken(put(path)).header("Authorization", basic("customer", "test-password")))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(accountService, userService);
+    }
+
+    @Test
+    void customerAccountServiceRejectsForgedOwnerEvenOutsideHttp() {
+        var secured = context.getBean(AccountService.class);
+        assertThrows(org.springframework.security.core.AuthenticationException.class,
+                () -> secured.getCustomerAccount(10L, 1L));
+        var principal = new CustomerPrincipal(1L, "customer", "unused-hash");
+        var auth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                principal, null, principal.getAuthorities());
+        try {
+            org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(auth);
+            assertThrows(org.springframework.security.access.AccessDeniedException.class,
+                    () -> secured.getCustomerAccount(10L, 2L));
+        } finally {
+            org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        }
+        verifyNoInteractions(accountService);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"short!", "JamesSmith", "James123!Lane", "JamesaBc!Lane"})
+    void invalidSignupAndReplacementPasswordsReturnRequirements(String password) throws Exception {
+        String json = USER_JSON.replace("customer-password", password);
+        for (String method : List.of("POST", "PUT")) {
+            String path = method.equals("POST") ? "/users" : "/users/1";
+            mvc.perform(withToken(request(HttpMethod.valueOf(method), path).contentType("application/json").content(json))
+                            .header("Authorization", basic("representative", "test-password")))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.errors[0]", org.hamcrest.Matchers.containsString("at least 10 characters")))
+                    .andExpect(jsonPath("$.errors[0]", org.hamcrest.Matchers.containsString("special character")));
+        }
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void tenCharacterSignupPasswordWithSpecialCharacterIsAccepted() throws Exception {
+        mvc.perform(withToken(post("/users").contentType("application/json")
+                        .content(USER_JSON.replace("customer-password", "James!Lane")))
+                        .header("Authorization", basic("representative", "test-password")))
+                .andExpect(status().isCreated());
+        verify(userService).createUser(any());
     }
 
     private MockHttpServletRequestBuilder withToken(MockHttpServletRequestBuilder request) throws Exception {

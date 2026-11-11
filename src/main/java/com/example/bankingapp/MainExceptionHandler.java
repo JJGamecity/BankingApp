@@ -12,11 +12,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentConversionNotSupportedException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +30,17 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class MainExceptionHandler {
 
-    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
-    public ProblemDetail handleAccessDenied(org.springframework.security.access.AccessDeniedException ex) {
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ProblemDetail handleInvalidParameters(HandlerMethodValidationException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+                "Request parameters are invalid. Account IDs must be positive integers.");
+        problem.setTitle("Validation Failed");
+        problem.setProperty("errorCode", "BAD_REQUEST");
+        return problem;
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleAccessDenied(AccessDeniedException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Access denied.");
     }
 

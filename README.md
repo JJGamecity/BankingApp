@@ -74,7 +74,7 @@ An admin can also view [Swagger UI](http://localhost:5050/swagger-ui/index.html)
 | --- | --- |
 | `ADMIN` | All implemented user/account commands and staff creation |
 | `BANK_REPRESENTATIVE` | Create, view, and update customers and bank accounts; cannot create staff |
-| `CUSTOMER` | View only accounts belonging to their authenticated database user ID |
+| `CUSTOMER` | View their own profile and accounts using their authenticated database user ID |
 
 Customers cannot grant themselves a staff role. Staff creation is checked at both
 the HTTP and service layers. Unknown endpoints are denied by default.
@@ -102,8 +102,24 @@ To create another admin, choose a different username/password and set `role` to
 and role. The new credentials can be used immediately.
 
 Staff usernames must be 3–50 letters, digits, dots, underscores, or hyphens.
-New staff and customer passwords must be at least 15 characters and at most 72
-UTF-8 bytes. Passwords are BCrypt-hashed before being stored.
+New customer and staff passwords must meet these requirements:
+
+- At least **10 characters**.
+- At least **one special character**, such as `!`, `@`, `#`, or `-`. Spaces alone do not count.
+- No ascending or descending sequence of **3 or more digits or English letters**,
+  such as `123`, `321`, `abc`, or `cba`. Letter matching ignores case, and spaces
+  between sequence characters do not bypass this rule (`1 2 3` is also rejected).
+- At most **72 UTF-8 bytes**, the BCrypt input limit.
+
+**First and last names are allowed** as long as the password meets the other
+requirements. For example, `James!Lane` illustrates an accepted 10-character
+password; choose your own unique password rather than using this example.
+`James123!Lane` is rejected because it contains `123`.
+
+These rules apply to customer signup, customer replacement, and staff creation.
+Invalid passwords return `400` with the requirements in the `password` field error;
+the same requirements appear in Swagger's password field description. Existing
+logins are not retroactively rejected by this policy. Passwords remain BCrypt-hashed.
 
 Duplicate or reserved usernames return `409`; invalid input returns `400`.
 Representatives and customers receive `403` when attempting staff creation.
@@ -172,6 +188,20 @@ The response does not include login credentials and is marked `no-store`.
 This endpoint is for customer identities. Admins and representatives use
 `GET /accounts/user-{id}` when viewing customer accounts.
 
+Customers can also send these GET requests with the same login:
+
+| Path | Response |
+| --- | --- |
+| `/users/me` | Own ID, username, email, first name, last name, and credit score; no password |
+| `/accounts/me` | All owned accounts, ordered by account ID; `[]` when none exist |
+| `/accounts/me/10` | One owned account, including its balance, account number, and routing number |
+
+Replace `10` with an account ID returned by `/accounts/me`. Account IDs must be
+positive integers. Invalid IDs return `400`. An account that is missing or belongs
+to someone else returns the same `404` response, without revealing its owner.
+These endpoints are read-only and customer-only. The existing
+`/accounts/user-{id}` endpoint remains available with its ownership checks.
+
 ## API endpoints
 
 Paths below are relative to `http://localhost:5050`.
@@ -182,10 +212,12 @@ Paths below are relative to `http://localhost:5050`.
 | `POST` | `/users` | Create a customer | Admin / representative |
 | `GET` | `/users` | List customers | Admin / representative |
 | `GET` | `/users/{id}` | Read a customer | Admin / representative |
+| `GET` | `/users/me` | View own customer profile | Customer |
 | `PUT` | `/users/{id}` | Update a customer | Admin / representative |
 | `POST` | `/accounts` | Create a bank account | Admin / representative |
 | `PUT` | `/accounts?id={accountId}` | Update a bank account | Admin / representative |
 | `GET` | `/accounts/me` | View own accounts, balances, and bank details | Customer |
+| `GET` | `/accounts/me/{accountId}` | View one owned account | Customer |
 | `GET` | `/accounts/user-{id}` | List a customer's accounts | Admin / representative / owning customer |
 | `GET` | `/csrf` | Retrieve a CSRF token | Any authenticated user |
 | `GET` | `/login` | Browser login page | Public |

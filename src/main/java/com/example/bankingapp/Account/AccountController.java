@@ -6,7 +6,8 @@ import com.example.bankingapp.CustomerPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
+import jakarta.validation.constraints.Positive;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +25,19 @@ public class AccountController {
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('CUSTOMER')")
+    @Operation(summary = "List your accounts", description = "Returns balances and bank details ordered by account ID. Returns an empty array when you have no accounts.")
     public ResponseEntity<List<AccountResponse>> getMyAccounts(
             @AuthenticationPrincipal CustomerPrincipal customer) {
         return ResponseEntity.ok(accountService.getAccounts(customer.getUserId()));
+    }
+
+    @GetMapping("/me/{accountId}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @Operation(summary = "View one of your accounts", description = "Returns 404 if the account does not exist or belongs to another customer.")
+    public ResponseEntity<AccountResponse> getMyAccount(
+            @AuthenticationPrincipal CustomerPrincipal customer,
+            @PathVariable @Positive Long accountId) {
+        return ResponseEntity.ok(accountService.getCustomerAccount(accountId, customer.getUserId()));
     }
 
     @PostMapping
