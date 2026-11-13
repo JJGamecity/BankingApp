@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Brand, Field, Notice, SecurityNote } from "../components/UI.jsx";
 import { API_URL, request, resetCsrf } from "../lib/api.js";
-import { navigate } from "../lib/navigation.js";
+import { navigate, followLink } from "../lib/navigation.js";
 import EditorialGallery from "../components/EditorialGallery.jsx";
 
 export default function AuthPage({ onSession, initialMessage, mode }) {
@@ -52,7 +52,14 @@ export default function AuthPage({ onSession, initialMessage, mode }) {
   return (
     <main className="auth-layout">
       <section className="auth-story">
-        <Brand />
+        <a
+          href="/"
+          onClick={(event) => followLink(event, "/")}
+          aria-label="Back to banking home"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Brand />
+        </a>
         <div className="story-copy">
           <span className="pill">
             <span className="status-dot" /> MADE FOR YOUR EVERYDAY

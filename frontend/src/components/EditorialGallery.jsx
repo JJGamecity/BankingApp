@@ -3,6 +3,13 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const scenes = [
   {
+    image: "/images/everyday-banking.svg",
+    alt: "An illustrated banking card beside a contactless payment terminal",
+    label: "YOUR EVERYDAY, SIMPLIFIED",
+    title: "A little more ease. Every day.",
+    caption: "Your money, with a fresh perspective.",
+  },
+  {
     image: "/images/green-architecture.jpg",
     alt: "Modern architecture with lush planting on every balcony",
     label: "ROOM TO GROW",

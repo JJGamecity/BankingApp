@@ -5,6 +5,7 @@ import Layout from "./components/Layout.jsx";
 import AuthPage from "./pages/AuthPage.jsx";
 import CustomerPage from "./pages/CustomerPage.jsx";
 import StaffPage from "./pages/StaffPage.jsx";
+import WelcomePage from "./pages/WelcomePage.jsx";
 import { navigate, paths, usePath } from "./lib/navigation.js";
 
 export default function App() {
@@ -55,7 +56,7 @@ export default function App() {
         if (Object.values(paths).includes(path))
           sessionStorage.setItem("banking:returnTo", path);
         navigate("/login", true);
-      } else if (path === "/") navigate("/login", true);
+      }
       return;
     }
     if (session.signupRequired) return;
@@ -104,6 +105,7 @@ export default function App() {
     }
   }
 
+  if (path === "/" && !session) return <WelcomePage />;
   if (loading)
     return (
       <div className="initial-loading">
