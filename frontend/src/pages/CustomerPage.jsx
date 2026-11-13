@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import EditorialGallery from "../components/EditorialGallery.jsx";
 import MoneyCompass from "../components/MoneyCompass.jsx";
-import CreditScoreCard from "../components/CreditScoreCard.jsx";
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,16 +21,8 @@ import {
   PageHeading,
 } from "../components/UI.jsx";
 
-export default function CustomerPage({
-  session,
-  page,
-  onNavigate,
-  onExpired,
-  targetAccountId,
-  onAccountTargetConsumed,
-}) {
+export default function CustomerPage({ session, page, onNavigate, onExpired }) {
   const [data, setData] = useState(null);
-  const [dataPage, setDataPage] = useState(null);
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -53,17 +44,12 @@ export default function CustomerPage({
   useEffect(() => {
     const controller = new AbortController();
     setData(null);
-    setDataPage(null);
     setError("");
     setSelected(null);
     request(page === "profile" ? "/users/me" : "/accounts/me", {
       signal: controller.signal,
     })
-      .then((result) => {
-        if (controller.signal.aborted) return;
-        setData(result);
-        setDataPage(page);
-      })
+      .then(setData)
       .catch((failure) => {
         if (failure.name === "AbortError") return;
         if (failure.status === 401) onExpired();
@@ -71,19 +57,6 @@ export default function CustomerPage({
       });
     return () => controller.abort();
   }, [page, retry, onExpired]);
-
-  useEffect(() => {
-    if (
-      page !== "accounts" ||
-      dataPage !== page ||
-      !Array.isArray(data) ||
-      targetAccountId == null
-    )
-      return;
-    const account = data.find((item) => item.id === targetAccountId);
-    if (account) setSelected(account);
-    onAccountTargetConsumed();
-  }, [page, dataPage, data, targetAccountId, onAccountTargetConsumed]);
 
   if (error)
     return (
@@ -116,12 +89,15 @@ export default function CustomerPage({
             <DataRow label="Username" value={data.username} />
             <DataRow label="Email address" value={data.email} />
             <DataRow label="Customer ID" value={data.id} />
+            <DataRow
+              label="Credit score"
+              value={data.creditScore ?? "Not assessed yet"}
+            />
             <p className="form-help">
               Need to change your details? Contact a bank representative.
             </p>
           </div>
         </section>
-        <CreditScoreCard profile={data} onExpired={onExpired} />
       </>
     );
   if (selected)
@@ -220,12 +196,6 @@ export default function CustomerPage({
           accounts={data}
           hidden={hideBalances}
           onSelect={setSelected}
-        />
-      )}
-      {page === "overview" && (
-        <CreditScoreCard
-          onExpired={onExpired}
-          onProfile={() => onNavigate("profile")}
         />
       )}
       <div className="section-heading">

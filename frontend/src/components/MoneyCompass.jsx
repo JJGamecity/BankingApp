@@ -5,12 +5,12 @@ import { accountAllocation } from "../lib/compass.js";
 import "./money-compass.css";
 
 const colors = [
-  "#147d80",
-  "#51b7aa",
-  "#77a9dc",
-  "#426e9d",
-  "#a299c6",
-  "#c79262",
+  "#355d49",
+  "#9bb57a",
+  "#d8b97e",
+  "#749c9a",
+  "#a28ba9",
+  "#b88470",
 ];
 
 export default function MoneyCompass({ accounts, hidden, onSelect }) {
@@ -58,7 +58,7 @@ export default function MoneyCompass({ accounts, hidden, onSelect }) {
               style={{
                 background:
                   hidden || !positiveTotal
-                    ? "#dce6ef"
+                    ? "#e4e8dc"
                     : `conic-gradient(${segments.join(",")})`,
               }}
             >

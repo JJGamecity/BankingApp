@@ -5,11 +5,9 @@ import {
   Users,
   Plus,
   UserPlus,
+  LogOut,
 } from "lucide-react";
 import { Brand } from "./UI.jsx";
-import SignOutButton from "./SignOutButton.jsx";
-import SiteFooter from "./SiteFooter.jsx";
-import CommandCenter from "./CommandCenter.jsx";
 import { paths, followLink } from "../lib/navigation.js";
 
 export default function Layout({
@@ -17,8 +15,6 @@ export default function Layout({
   page,
   onNavigate,
   onLogout,
-  onAccountSelect,
-  onExpired,
   busy,
   children,
 }) {
@@ -39,16 +35,16 @@ export default function Layout({
 
   return (
     <div className="app-layout">
-      <header className="portal-header">
+      <header className="sidebar portal-header">
         <Brand />
-        <nav className="portal-tabs" aria-label="Main navigation">
+        <nav aria-label="Main navigation">
           {navigation.map(([key, Icon, label]) => (
             <a
               href={
                 key === "overview" && !customer ? paths.customers : paths[key]
               }
               key={key}
-              className={`portal-tab ${page === key ? "active" : ""}`}
+              className={`nav-item ${page === key ? "active" : ""}`}
               aria-current={page === key ? "page" : undefined}
               onClick={(event) =>
                 followLink(
@@ -61,10 +57,11 @@ export default function Layout({
             >
               <Icon size={19} />
               {label}
+              {page === key && <span className="nav-dot" />}
             </a>
           ))}
         </nav>
-        <div className="portal-profile">
+        <div className="sidebar-profile">
           <span className="avatar">{session.username?.[0]?.toUpperCase()}</span>
           <div>
             <strong>{session.username}</strong>
@@ -79,19 +76,19 @@ export default function Layout({
             <span className="breadcrumb-divider">/</span>
             <strong>{navigation.find(([key]) => key === page)?.[2]}</strong>
           </div>
-          <div className="topbar-actions">
-            <CommandCenter
-              session={session}
-              onNavigate={onNavigate}
-              onAccountSelect={onAccountSelect}
-              onExpired={onExpired}
-            />
-            <SignOutButton busy={busy} onLogout={onLogout} />
-          </div>
+          <button className="signout" disabled={busy} onClick={onLogout}>
+            <LogOut size={17} />
+            {busy ? "Signing out…" : "Sign out"}
+          </button>
         </header>
         <main className="workspace">
           {children}
-          <SiteFooter session={session} />
+          <footer className="workspace-footer">
+            <span>
+              banking. <span className="muted">A little more possibility.</span>
+            </span>
+            <span>Made for your everyday ↗</span>
+          </footer>
         </main>
       </div>
     </div>
