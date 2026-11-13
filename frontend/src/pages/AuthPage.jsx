@@ -74,7 +74,7 @@ export default function AuthPage({ onSession, initialMessage, mode }) {
             close and your possibilities open.
           </p>
         </div>
-        <EditorialGallery />
+        <EditorialGallery blue />
         <div className="banking-art legacy-art" aria-hidden="true">
           <div className="orbit orbit-one" />
           <div className="orbit orbit-two" />

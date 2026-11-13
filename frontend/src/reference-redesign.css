@@ -1,0 +1,1288 @@
+/* Dark visual stage, luminous sculptural artwork, and horizontal oval tabs. */
+.rocket-flight-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  overflow: hidden;
+  visibility: hidden;
+}
+.rocket-flight-layer[data-flying="true"] {
+  visibility: visible;
+}
+.rocket-flight-layer canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.rocket-flight-sprite {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 42px;
+  height: 48px;
+  user-select: none;
+  will-change: transform;
+  filter: drop-shadow(0 2px 5px #97c6ff50);
+}
+@media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
+  .rocket-flight-layer {
+    display: none;
+  }
+}
+.bank-home .home-hero {
+  position: relative;
+  isolation: isolate;
+}
+.bank-home .home-hero-copy,
+.bank-home .home-hero > .showcase {
+  position: relative;
+  z-index: 1;
+}
+
+.bank-home #possibilities {
+  grid-template-columns: 1fr;
+  gap: 25px;
+}
+.planner-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 35px;
+  padding: 12px 8px;
+}
+.planner-intro > div {
+  max-width: 700px;
+}
+.bank-home .planner-intro .home-eyebrow {
+  color: #a4b8da;
+}
+.bank-home .planner-intro h2 {
+  color: #f1f5ff;
+  margin: 14px 0 16px;
+  font-size: clamp(30px, 3.3vw, 43px);
+}
+.bank-home .planner-intro h2 em {
+  font-family: inherit;
+  font-style: normal;
+  color: #aebff1;
+}
+.planner-intro p {
+  color: #a9bad7;
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0;
+  max-width: 590px;
+}
+.planner-blue-photo {
+  width: 180px;
+  height: 140px;
+  object-fit: cover;
+  object-position: center 42%;
+  border-radius: 22px;
+  border: 1px solid #8daed54d;
+  flex-shrink: 0;
+  box-shadow: 0 12px 28px #00000020;
+}
+.bank-home #possibilities .home-planner-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 44px;
+  padding: 38px;
+  align-items: start;
+}
+.planner-inputs > p {
+  color: #6c7e9b;
+  font-size: 13px;
+  margin-bottom: 25px;
+}
+.planner-results {
+  border-left: 1px solid #c9d6ed;
+  padding-left: 35px;
+}
+.bank-home .planner-results .home-projection {
+  margin-top: 0;
+  padding: 24px;
+}
+.planner-results > small {
+  display: block;
+  font-size: 10px;
+  color: #667995;
+  line-height: 1.8;
+}
+@media (max-width: 800px) {
+  .planner-intro {
+    gap: 22px;
+  }
+  .planner-blue-photo {
+    width: 135px;
+    height: 130px;
+  }
+  .bank-home #possibilities .home-planner-controls {
+    gap: 28px;
+    padding: 28px;
+  }
+  .planner-results {
+    padding-left: 24px;
+  }
+}
+@media (max-width: 650px) {
+  .bank-home #possibilities .home-planner-controls {
+    grid-template-columns: 1fr;
+    padding: 25px 22px;
+    gap: 25px;
+  }
+  .planner-results {
+    padding: 25px 0 0;
+    border-left: 0;
+    border-top: 1px solid #c9d6ed;
+  }
+  .planner-intro {
+    align-items: start;
+    gap: 14px;
+  }
+  .planner-blue-photo {
+    width: 80px;
+    height: 100px;
+    border-radius: 16px;
+    margin-top: 12px;
+  }
+  .planner-intro p {
+    font-size: 12px;
+  }
+  .bank-home .planner-intro h2 {
+    font-size: 29px;
+  }
+}
+
+.presentation-card,
+.bank-home .home-bank-card {
+  background: linear-gradient(125deg, #e0efff, #a8ccf6);
+  color: #2b4c76;
+  box-shadow: 12px 24px 40px #1b3e6c30;
+}
+.art-note,
+.bank-home .home-art-note,
+.bank-home .home-art-note > span {
+  background: #edf6ff;
+  color: #537ba8;
+}
+.chip,
+.home-card-chip {
+  border-color: #90add0;
+  background: linear-gradient(90deg, #dcecff 45%, #90add0 48%, #dcecff 51%);
+}
+.account-card .soft-icon,
+.account-savings .soft-icon,
+.account-money_market .soft-icon,
+.compass-icon,
+.compass-account[aria-pressed="true"] {
+  background: #e4f0ff;
+  color: #547cae;
+  border-color: #acc9ed;
+}
+.compass-center {
+  background: #f7fbff;
+}
+.compass-ring {
+  box-shadow:
+    0 0 0 10px #edf5ff,
+    0 0 0 11px #d6e5f7;
+}
+.editorial-shade {
+  background: linear-gradient(180deg, #16325a08, #142d5050 42%, #102440ed);
+}
+.possibility-card em,
+.possibility-card > svg,
+.account-card .card-top > svg {
+  color: #758fba;
+}
+.balance-bottom button {
+  background: #dcecff;
+}
+.gallery-blue .editorial-image {
+  object-position: center 58%;
+}
+.gallery-blue .editorial-shade {
+  background: linear-gradient(
+    180deg,
+    #12264a08 10%,
+    #10264b55 45%,
+    #0b1935f2 100%
+  );
+}
+.gallery-blue .editorial-copy .eyebrow {
+  color: #bbd5ff;
+}
+.gallery-blue .gallery-dots button[aria-pressed="true"] {
+  background: #c2d7ff;
+}
+.bank-home .savings-rate {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: #dce6fa;
+  border: 1px solid #c2d4ef;
+  border-radius: 18px;
+  padding: 17px;
+  margin: 0 0 25px;
+  color: #5e76a0;
+}
+.savings-rate > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.savings-rate strong {
+  font-size: 29px;
+  line-height: 1;
+  color: #314c7d;
+  font-weight: 550;
+}
+.savings-rate span,
+.savings-rate small {
+  font-size: 10px;
+  line-height: 1.6;
+}
+.savings-rate small {
+  margin-left: auto;
+  text-align: right;
+}
+.bank-home .savings-month-label {
+  margin-top: 25px;
+}
+.bank-home .home-periods {
+  margin-top: 16px;
+}
+.savings-result-caption {
+  font-size: 10px;
+  color: #627799;
+  margin: 8px 0 0;
+}
+.savings-breakdown {
+  border-top: 1px solid #bdcde6;
+  padding-top: 15px;
+  margin-top: 15px;
+  display: grid;
+  gap: 11px;
+}
+.savings-breakdown > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  font-size: 11px;
+  color: #5b7196;
+}
+.savings-breakdown strong {
+  color: #2d436c;
+}
+.savings-growth {
+  padding: 19px;
+  background: #ffffff80;
+  border: 1px solid #d1ddf1;
+  border-radius: 17px;
+  margin-bottom: 18px;
+}
+.savings-growth-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #6f83a6;
+}
+.savings-growth-heading > span:last-child {
+  letter-spacing: 0;
+}
+.savings-growth-bars {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  text-align: center;
+}
+.savings-growth-bars strong {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: #4a648d;
+  margin-bottom: 8px;
+}
+.savings-growth-bars small {
+  display: block;
+  font-size: 9px;
+  color: #798ba7;
+  margin-top: 8px;
+}
+.savings-growth-track {
+  height: 75px;
+  display: flex;
+  align-items: end;
+  border-bottom: 1px solid #ccd9ec;
+}
+.savings-growth-track > span {
+  width: 100%;
+  border-radius: 7px 7px 0 0;
+  background: linear-gradient(0deg, #9caed8, #ccd6f1);
+  transition: height 0.25s;
+}
+.savings-growth-bars > div:last-child .savings-growth-track > span {
+  background: linear-gradient(0deg, #405d93, #9b9ed2);
+}
+.bank-home .home-planner-controls input[type="range"]:focus-visible {
+  outline: 2px solid #708cc1;
+  outline-offset: 4px;
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .savings-growth-track > span {
+    transition: none;
+  }
+}
+:root {
+  --forest: #314e83;
+  --leaf: #d9e4ff;
+  --muted: #6c7b93;
+  --border: #d8e2f1;
+  background: #eef3fc;
+  color: #253953;
+}
+body {
+  background: #eef3fc;
+}
+.button {
+  border-radius: 40px;
+}
+.bank-home {
+  --ink: #f2f5ff;
+  --soft: #0c142b;
+  background:
+    radial-gradient(ellipse at 85% 0%, #49447566, transparent 38%), #0c142b;
+  color: #f2f5ff;
+}
+.bank-home .home-header {
+  max-width: 1320px;
+  padding: 25px 4%;
+  background: transparent;
+}
+.home-header .brand {
+  font-size: 26px;
+}
+.home-header .brand-icon {
+  border-radius: 50%;
+  border-color: #91a5d46b;
+}
+.home-header nav {
+  gap: 3px;
+  padding: 6px;
+  border: 1px solid #ffffff23;
+  border-radius: 60px;
+  background: #ffffff0a;
+  backdrop-filter: blur(16px);
+}
+.home-header nav > a {
+  border-radius: 40px;
+  padding: 12px 20px;
+  color: #d0dcf4;
+  font-size: 12px;
+}
+.home-header nav > a:not(.home-button):hover {
+  background: #ffffff12;
+  color: #fff;
+}
+.bank-home .home-button {
+  border-radius: 40px;
+  color: #1d2a48;
+  background: #d8e3ff;
+}
+.bank-home .home-button-dark {
+  background: linear-gradient(110deg, #c5d6ff, #aa94e9);
+  color: #182544;
+  box-shadow: 0 8px 30px #8b7fc922;
+}
+.home-header nav > .home-button {
+  padding: 12px 20px;
+  gap: 12px;
+}
+.bank-home .home-hero {
+  max-width: 1320px;
+  padding: 65px 4% 85px;
+  gap: 40px;
+  grid-template-columns: 1fr 1.05fr;
+  min-height: 630px;
+}
+.bank-home .home-hero h1 {
+  font-size: clamp(46px, 4.7vw, 70px);
+  letter-spacing: -3px;
+  line-height: 1.12;
+  font-weight: 450;
+  margin: 26px 0;
+}
+.bank-home .home-hero h1 em {
+  font-family: inherit;
+  font-style: normal;
+  color: #b1bff1;
+  background: linear-gradient(100deg, #a7d5ff, #b69be9);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.bank-home .home-hero .home-eyebrow {
+  padding: 8px 13px;
+  background: #182542;
+  border: 1px solid #53648780;
+  border-radius: 30px;
+  color: #b2c1df;
+  font-size: 8px;
+  letter-spacing: 1.6px;
+}
+.bank-home .home-hero .home-eyebrow i {
+  background: #b9a8f3;
+  box-shadow: 0 0 0 4px #b9a8f315;
+}
+.bank-home .home-hero-copy > p {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #a7b7d2;
+  max-width: 360px;
+}
+.bank-home .home-hero .home-text-link {
+  color: #d2def7;
+  font-size: 12px;
+}
+.bank-home .home-assurance {
+  color: #9caecc;
+  font-size: 10px;
+}
+.bank-home .home-feature-strip {
+  background: transparent;
+  max-width: 1320px;
+  margin: auto;
+  padding: 28px 4%;
+  border-color: #ffffff1a;
+}
+.bank-home .home-feature-strip h2 {
+  color: #dce5fc;
+  font-size: 14px;
+}
+.bank-home .home-feature-strip p {
+  color: #a2b1ce;
+  font-size: 11px;
+}
+.bank-home .home-feature-strip > div > svg {
+  color: #afa4e6;
+}
+.bank-home .home-accounts {
+  max-width: 1220px;
+  margin: 65px auto 45px;
+  padding: 55px;
+  background: linear-gradient(135deg, #f0f6ff, #e7eafb);
+  border-radius: 36px;
+  color: #263b5e;
+}
+.bank-home .home-accounts .home-eyebrow {
+  color: #6c7da0;
+}
+.bank-home .home-accounts h2 {
+  font-size: 42px;
+  font-weight: 450;
+}
+.bank-home .home-accounts em {
+  color: #687cb1;
+  font-family: inherit;
+  font-style: normal;
+}
+.bank-home .home-section-heading > p {
+  color: #6b7c96;
+}
+.bank-home .home-account-tabs {
+  background: #dce5f4;
+  border-color: #d3ddef;
+  border-radius: 50px;
+  padding: 6px;
+}
+.bank-home .home-account-tabs button {
+  border-radius: 40px;
+  padding: 15px 20px;
+  color: #627493;
+}
+.bank-home .home-account-tabs button.selected {
+  background: #344d83;
+  color: #f5f7ff;
+}
+.bank-home .home-account-preview {
+  border-radius: 23px;
+  border-color: #d4dff0;
+  box-shadow: 0 12px 35px #58709110;
+}
+.bank-home .home-account-copy p,
+.bank-home .home-account-copy small {
+  color: #6d7d95;
+}
+.bank-home .home-account-copy li svg {
+  color: #788cc1;
+}
+.bank-home .home-account-copy .home-text-link {
+  color: #426293;
+}
+.bank-home .home-planner {
+  max-width: 1220px;
+  margin: 0 auto 50px;
+  padding: 0;
+  gap: 25px;
+}
+.bank-home .home-planner-story {
+  border-radius: 30px;
+  min-height: 550px;
+}
+.bank-home .home-planner-story:after {
+  background: linear-gradient(transparent, #0f1d3beb);
+}
+.bank-home .home-planner-story em {
+  font-family: inherit;
+  font-style: normal;
+  color: #c7d2fa;
+}
+.bank-home .home-planner-controls {
+  background: linear-gradient(140deg, #edf4ff, #e9e8f8);
+  border: 1px solid #d0dff0;
+  border-radius: 30px;
+  padding: 35px;
+  color: #293e5e;
+}
+.bank-home .home-planner-controls .home-eyebrow {
+  color: #7282a5;
+}
+.bank-home .home-planner-controls > p {
+  color: #74839b;
+}
+.bank-home .home-periods button {
+  border-radius: 30px;
+  border-color: #c7d5e9;
+  color: #4b628a;
+}
+.bank-home .home-periods button[aria-pressed="true"] {
+  color: white;
+  background: #344d83;
+  border-color: #344d83;
+}
+.bank-home .home-planner-controls input[type="range"] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  min-height: 0;
+  height: 28px;
+  accent-color: #667cb4;
+}
+.bank-home .home-projection {
+  background: #dce5f8;
+  border-radius: 20px;
+}
+.bank-home .home-projection > span {
+  color: #5a7095;
+}
+.bank-home .home-projection svg {
+  color: #8795bd;
+}
+.bank-home .home-cta {
+  max-width: 1220px;
+  margin: 0 auto 50px;
+  background:
+    radial-gradient(ellipse at right, #6f69b54d, transparent 70%), #1b2b4c;
+  border: 1px solid #687eac44;
+  border-radius: 30px;
+  color: #eef3ff;
+}
+.bank-home .home-cta .home-eyebrow {
+  color: #a9bce0;
+}
+.bank-home .home-cta em {
+  font-family: inherit;
+  font-style: normal;
+  color: #bdb7ed;
+}
+.bank-home .home-footer {
+  max-width: 1320px;
+  border-color: #ffffff1a;
+  color: #9caccc;
+  padding: 30px 4%;
+}
+.bank-home .home-footer .brand {
+  color: #dde6ff;
+}
+.showcase {
+  height: 490px;
+  position: relative;
+  isolation: isolate;
+  perspective: 1200px;
+  min-width: 0;
+}
+.showcase-ribbons {
+  position: absolute;
+  inset: -45px -50px 0 -25px;
+  z-index: -1;
+  transform: rotate(-20deg);
+  pointer-events: none;
+}
+.showcase-ribbons i {
+  position: absolute;
+  top: calc(25px + var(--i) * 20px);
+  left: calc(var(--i) * 52px);
+  height: 330px;
+  width: 150px;
+  border-radius: 90px 90px 120px 80px;
+  background: linear-gradient(
+    165deg,
+    #bd91e2,
+    #5d70c9 45%,
+    #68bde8 80%,
+    #92c9f1
+  );
+  box-shadow:
+    inset 3px 2px 10px #ffffff50,
+    inset -13px -6px 25px #17245d70,
+    6px 10px 30px #00000030;
+  transform: skewY(14deg);
+  opacity: calc(0.55 + var(--i) * 0.06);
+}
+.showcase-screen {
+  position: absolute;
+  left: 0;
+  top: 58px;
+  width: 96%;
+  background: #f2f6ff;
+  border-radius: 19px;
+  border: 1px solid #cddaf0;
+  box-shadow:
+    0 0 0 7px #111b33cc,
+    0 35px 65px #00000060;
+  color: #2d4060;
+  transform: rotateY(-9deg) rotateZ(3deg);
+  overflow: hidden;
+  transition: transform 0.5s;
+}
+.showcase:hover .showcase-screen {
+  transform: rotateY(-2deg) rotateZ(1deg) translateY(-5px);
+}
+.showcase-screen > header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  border-bottom: 1px solid #dce5f3;
+  background: #fff;
+}
+.showcase-screen > header strong {
+  font-size: 16px;
+  letter-spacing: -0.6px;
+}
+.showcase-screen > header > span {
+  margin-left: auto;
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: #8498b7;
+}
+.showcase-screen > header > b {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e4e7fb;
+  font-size: 10px;
+  color: #7c86b4;
+}
+.showcase-body {
+  padding: 25px;
+}
+.showcase-body > small {
+  font-size: 7px;
+  letter-spacing: 1.7px;
+  color: #8d9eb9;
+}
+.showcase-body h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 7px 0 18px;
+}
+.showcase-balance {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: linear-gradient(110deg, #2a4072, #52568d);
+  border-radius: 14px;
+  padding: 23px;
+  color: #f0f4ff;
+}
+.showcase-balance > span {
+  font-size: 10px;
+  color: #c2cfeb;
+}
+.showcase-balance > strong {
+  font-size: 33px;
+  letter-spacing: -1px;
+  font-weight: 500;
+}
+.showcase-balance > small {
+  font-size: 8px;
+  color: #b9c7e3;
+}
+.showcase-details {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 20px;
+  margin-top: 18px;
+}
+.showcase-details > div:first-child {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #e0e7f2;
+  font-size: 9px;
+}
+.showcase-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  padding: 11px;
+  margin: 12px auto 0;
+  background: conic-gradient(#85bdf3 0 50%, #a9a0ec 50% 85%, #78cbbf 85% 100%);
+}
+.showcase-ring b {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: white;
+  width: 100%;
+  height: 100%;
+  font-size: 20px;
+  font-weight: 500;
+}
+.showcase-ring small {
+  font-size: 7px;
+  color: #94a3bb;
+}
+.showcase-accounts {
+  align-self: center;
+}
+.showcase-accounts p {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 9px;
+  padding: 10px 0;
+  margin: 0;
+  border-bottom: 1px solid #dbe4f2;
+}
+.showcase-accounts strong {
+  font-size: 10px;
+}
+.showcase-note {
+  position: absolute;
+  right: -5px;
+  bottom: 10px;
+  padding: 16px 20px;
+  background: #fafcff;
+  border: 1px solid #d4dff2;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 15px 30px #00000030;
+  transform: rotate(-4deg);
+  color: #60718d;
+  font-size: 10px;
+}
+.showcase-note > span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #e4eafa;
+  font-size: 25px;
+  color: #7b81b5;
+}
+.showcase-note strong {
+  display: block;
+  font-size: 12px;
+  color: #354a6b;
+  margin-top: 4px;
+}
+.showcase-caption {
+  position: absolute;
+  bottom: -35px;
+  left: 5%;
+  font-size: 8px;
+  color: #93a5c9;
+  letter-spacing: 0.3px;
+}
+/* All signed-in navigation moves into a horizontal oval bar. */
+.app-layout {
+  display: block;
+  background:
+    radial-gradient(ellipse at 85% 0%, #dce7ff, transparent 60%), #eff4fd;
+}
+.sidebar.portal-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  padding: 22px 4%;
+  background: linear-gradient(110deg, #101b35, #233357);
+  color: #e1eaff;
+  border: 0;
+}
+.portal-header .brand {
+  padding: 0;
+  margin: 0;
+  font-size: 25px;
+}
+.portal-header .brand-icon {
+  border-radius: 50%;
+  border-color: #8699c470;
+}
+.portal-header nav {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  padding: 6px;
+  border: 1px solid #8a9dc53d;
+  border-radius: 60px;
+  background: #ffffff0b;
+}
+.portal-header .nav-item {
+  width: auto;
+  padding: 12px 22px;
+  border-radius: 40px;
+  color: #b1c1df;
+  font-size: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.portal-header .nav-item:hover {
+  background: #ffffff10;
+  color: #fff;
+}
+.portal-header .nav-item.active {
+  background: linear-gradient(110deg, #ccdcff, #b5a6ec);
+  color: #1c2c50;
+}
+.portal-header .nav-dot {
+  display: none;
+}
+.portal-header .sidebar-profile {
+  border: 0;
+  padding: 0;
+  gap: 10px;
+}
+.portal-header .sidebar-profile div > span {
+  color: #8fa2c8;
+}
+.portal-header .avatar {
+  background: #a8b6dc26;
+  color: #c1d2f3;
+}
+.main-column {
+  background: transparent;
+}
+.topbar {
+  max-width: 1280px;
+  margin: auto;
+  padding: 15px 0;
+  height: 76px;
+  background: transparent;
+  border-color: #d0ddef;
+}
+.workspace {
+  max-width: 1280px;
+  padding: 30px 0;
+  margin: auto;
+}
+.signout {
+  border-radius: 40px;
+  padding: 12px 18px;
+  border-color: #c7d8ee;
+  color: #46668e;
+  background: #f7faff;
+}
+.signout:hover {
+  background: #dfeafa;
+}
+.balance-card {
+  background:
+    radial-gradient(ellipse at right top, #6f6da852, transparent 70%), #273b64;
+  color: #f0f5ff;
+  border-radius: 25px;
+}
+.balance-card p,
+.balance-card .eyebrow {
+  color: #b6c6e4;
+}
+.balance-bottom {
+  color: #bbcae8;
+}
+.possibility-card {
+  background: linear-gradient(120deg, #dfeafa, #e9e3f8);
+  border-color: #d4dff0;
+  border-radius: 25px;
+}
+.possibility-card h2 {
+  color: #4a6087;
+}
+.possibility-card .eyebrow,
+.possibility-card p {
+  color: #6e7d96;
+}
+.money-compass {
+  background: linear-gradient(135deg, #ffffff, #eaf0fc);
+  border-color: #d6e1f0;
+  border-radius: 25px;
+}
+.account-card {
+  border-radius: 23px;
+}
+.auth-story {
+  background:
+    radial-gradient(ellipse at 0% 70%, #655a9b66, transparent 70%), #111c38;
+  color: #eef4ff;
+}
+.auth-story::before {
+  background-image: repeating-linear-gradient(
+    130deg,
+    transparent 0 65px,
+    #a4b5ec0b 66px 110px
+  );
+  background-size: auto;
+  opacity: 1;
+}
+.story-copy em {
+  color: #c0b5ed;
+}
+.story-copy p {
+  color: #a6b8d9;
+}
+.auth-content {
+  background: linear-gradient(140deg, #f3f7ff, #e7effc);
+}
+.auth-tabs {
+  border-radius: 40px;
+  background: #dfe8f9;
+}
+.auth-tabs button {
+  border-radius: 35px;
+}
+.small-logo {
+  background: #dfe7fa;
+  color: #6479ac;
+}
+.brand-dot {
+  color: #9c9de1;
+}
+@media (max-width: 1350px) {
+  .bank-home .home-accounts,
+  .bank-home .home-planner,
+  .bank-home .home-cta {
+    margin-left: 4%;
+    margin-right: 4%;
+  }
+  .workspace,
+  .topbar {
+    margin-left: 4%;
+    margin-right: 4%;
+  }
+}
+@media (max-width: 1000px) {
+  .bank-home .home-hero {
+    gap: 25px;
+  }
+  .bank-home .home-hero h1 {
+    font-size: 51px;
+  }
+  .home-header nav > a {
+    padding: 11px 14px;
+  }
+  .showcase {
+    height: 455px;
+  }
+  .showcase-body {
+    padding: 20px;
+  }
+  .showcase-note {
+    padding: 13px;
+    bottom: 3px;
+  }
+  .showcase-ribbons {
+    transform: rotate(-20deg) scale(0.85);
+    inset: -45px -70px 0 -60px;
+  }
+  .portal-header .nav-item {
+    padding: 12px 16px;
+  }
+  .portal-header .sidebar-profile > div {
+    display: none;
+  }
+  .bank-home .home-accounts {
+    padding: 38px;
+  }
+  .bank-home .home-planner-controls {
+    padding: 26px;
+  }
+}
+@media (max-width: 800px) {
+  .home-header nav > a:first-child,
+  .home-header nav > a:nth-child(2) {
+    display: block;
+  }
+  .home-header nav > a {
+    font-size: 10px;
+    padding: 10px 11px;
+  }
+  .home-header nav > .home-button {
+    font-size: 10px;
+    padding: 10px 13px;
+    gap: 8px;
+  }
+  .home-header .brand {
+    font-size: 23px;
+  }
+  .bank-home .home-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding-top: 35px;
+    padding-bottom: 65px;
+    gap: 20px;
+  }
+  .bank-home .home-hero h1 {
+    font-size: 60px;
+  }
+  .bank-home .home-hero-copy > p {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 430px;
+  }
+  .bank-home .home-actions,
+  .bank-home .home-assurance {
+    justify-content: center;
+  }
+  .showcase {
+    width: 490px;
+    max-width: 90%;
+    height: 490px;
+    justify-self: center;
+  }
+  .showcase-body {
+    padding: 25px;
+  }
+  .showcase-note {
+    bottom: 10px;
+  }
+  .showcase-caption {
+    width: 100%;
+    left: 0;
+  }
+  .bank-home .home-planner {
+    grid-template-columns: 1fr;
+  }
+  .bank-home .home-planner-story {
+    min-height: 340px;
+  }
+  .sidebar.portal-header {
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .portal-header nav {
+    order: 3;
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+  .portal-header .nav-item {
+    flex: 1;
+    justify-content: center;
+  }
+  .portal-header .sidebar-profile {
+    display: flex;
+  }
+  .portal-header .sidebar-profile > div {
+    display: block;
+  }
+  .bank-home .home-accounts h2 {
+    font-size: 36px;
+  }
+}
+@media (max-width: 580px) {
+  .bank-home .home-header {
+    padding: 22px 6%;
+  }
+  .home-menu {
+    background: #ffffff0a;
+    border-color: #8ba3d14d;
+    color: #d8e2fb;
+    border-radius: 50%;
+  }
+  .home-header nav {
+    display: none;
+    top: 80px;
+    padding: 12px;
+    left: 6%;
+    right: 6%;
+    border-radius: 24px;
+    background: #1d2b48;
+    border-color: #597198;
+    box-shadow: 0 15px 40px #00000045;
+  }
+  .home-header nav.is-open {
+    display: flex;
+  }
+  .home-header nav.is-open > a {
+    display: flex;
+    padding: 14px 18px;
+    font-size: 12px;
+  }
+  .bank-home .home-hero {
+    padding: 24px 6% 57px;
+  }
+  .bank-home .home-hero h1 {
+    font-size: 44px;
+    letter-spacing: -2px;
+  }
+  .bank-home .home-hero .home-eyebrow {
+    font-size: 7px;
+  }
+  .bank-home .home-hero-copy > p {
+    font-size: 13px;
+  }
+  .showcase {
+    height: 420px;
+    max-width: 100%;
+  }
+  .showcase-screen {
+    top: 45px;
+    left: 1%;
+    width: 98%;
+    transform: rotateZ(2deg);
+  }
+  .showcase-screen > header {
+    padding: 12px;
+  }
+  .showcase-screen > header > span {
+    font-size: 6px;
+  }
+  .showcase-body {
+    padding: 18px;
+  }
+  .showcase-body h2 {
+    font-size: 18px;
+  }
+  .showcase-balance {
+    padding: 18px;
+  }
+  .showcase-balance > strong {
+    font-size: 28px;
+  }
+  .showcase-details {
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .showcase-ring {
+    width: 65px;
+    height: 65px;
+    padding: 9px;
+  }
+  .showcase-accounts p {
+    font-size: 8px;
+  }
+  .showcase-accounts strong {
+    font-size: 9px;
+  }
+  .showcase-note {
+    right: 0;
+    bottom: 0;
+    font-size: 9px;
+    padding: 12px;
+  }
+  .showcase-note strong {
+    font-size: 11px;
+  }
+  .showcase-ribbons {
+    transform: rotate(-20deg) scale(0.7);
+    inset: -80px -90px 0 -90px;
+  }
+  .showcase-caption {
+    font-size: 7px;
+    bottom: -25px;
+  }
+  .bank-home .home-feature-strip {
+    padding: 25px 8%;
+    gap: 22px;
+  }
+  .bank-home .home-accounts {
+    margin: 30px 4%;
+    padding: 28px 18px;
+    border-radius: 27px;
+  }
+  .bank-home .home-accounts h2 {
+    font-size: 33px;
+  }
+  .bank-home .home-account-tabs button {
+    font-size: 10px;
+    padding: 12px 7px;
+    gap: 5px;
+  }
+  .bank-home .home-account-copy {
+    padding: 25px;
+  }
+  .bank-home .home-planner {
+    margin: 0 4% 30px;
+    gap: 18px;
+  }
+  .bank-home .home-planner-controls {
+    padding: 27px 22px;
+    border-radius: 27px;
+  }
+  .bank-home .home-cta {
+    margin: 0 4% 30px;
+    padding: 32px;
+    border-radius: 27px;
+  }
+  .bank-home .home-footer {
+    padding: 25px 6%;
+  }
+  .sidebar.portal-header {
+    padding: 20px 5% 17px;
+  }
+  .portal-header .sidebar-profile > div {
+    display: none;
+  }
+  .portal-header .nav-item {
+    font-size: 10px;
+    padding: 11px 8px;
+    gap: 6px;
+  }
+  .portal-header .nav-item svg {
+    width: 15px;
+  }
+  .portal-header nav {
+    gap: 2px;
+    padding: 5px;
+  }
+  .workspace,
+  .topbar {
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+  .workspace .date-label {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .showcase-screen {
+    transition: none;
+  }
+  .showcase:hover .showcase-screen {
+    transform: rotateY(-9deg) rotateZ(3deg);
+  }
+}

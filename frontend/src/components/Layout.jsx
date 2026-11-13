@@ -6,8 +6,6 @@ import {
   Plus,
   UserPlus,
   LogOut,
-  ArrowUpRight,
-  Sprout,
 } from "lucide-react";
 import { Brand } from "./UI.jsx";
 import { paths, followLink } from "../lib/navigation.js";
@@ -37,9 +35,8 @@ export default function Layout({
 
   return (
     <div className="app-layout">
-      <aside className="sidebar">
+      <header className="sidebar portal-header">
         <Brand />
-        <p className="nav-label">YOUR WORKSPACE</p>
         <nav aria-label="Main navigation">
           {navigation.map(([key, Icon, label]) => (
             <a
@@ -64,20 +61,6 @@ export default function Layout({
             </a>
           ))}
         </nav>
-        <div className="sidebar-promo">
-          <Sprout size={28} />
-          <h3>
-            Good things
-            <br />
-            grow from here.
-          </h3>
-          <p>
-            A little attention today.
-            <br />
-            More possibility tomorrow.
-          </p>
-          <ArrowUpRight size={22} />
-        </div>
         <div className="sidebar-profile">
           <span className="avatar">{session.username?.[0]?.toUpperCase()}</span>
           <div>
@@ -85,7 +68,7 @@ export default function Layout({
             <span>{customer ? "Personal banking" : "Staff workspace"}</span>
           </div>
         </div>
-      </aside>
+      </header>
       <div className="main-column">
         <header className="topbar">
           <div>

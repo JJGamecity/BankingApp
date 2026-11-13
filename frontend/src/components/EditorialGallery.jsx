@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-const scenes = [
+const defaultScenes = [
   {
-    image: "/images/everyday-banking.svg",
-    alt: "An illustrated banking card beside a contactless payment terminal",
+    image: "/images/everyday-banking.svg?v=light-blue-2",
+    alt: "A light blue banking card beside a payment terminal on a pale blue background",
     label: "YOUR EVERYDAY, SIMPLIFIED",
     title: "A little more ease. Every day.",
     caption: "Your money, with a fresh perspective.",
@@ -25,12 +25,30 @@ const scenes = [
   },
 ];
 
-export default function EditorialGallery({ compact = false }) {
+const blueScenes = [
+  {
+    image: "/images/blue-architecture.jpg",
+    alt: "Blue glass towers rising into a clear blue sky",
+    label: "A CLEARER OUTLOOK",
+    title: "A fresh perspective starts here.",
+    caption: "A little clarity for your next chapter.",
+  },
+  {
+    image: "/images/blue-city.jpg",
+    alt: "Curved blue glass building reflecting the sky",
+    label: "BUILT AROUND YOU",
+    title: "Room for your bigger picture.",
+    caption: "Your everyday banking, thoughtfully brought together.",
+  },
+];
+
+export default function EditorialGallery({ compact = false, blue = false }) {
+  const scenes = blue ? blueScenes : defaultScenes;
   const [index, setIndex] = useState(0);
   const scene = scenes[index];
   return (
     <section
-      className={`editorial-gallery ${compact ? "gallery-compact" : ""}`}
+      className={`editorial-gallery ${compact ? "gallery-compact" : ""} ${blue ? "gallery-blue" : ""}`}
       aria-label="Everyday inspiration"
     >
       <img

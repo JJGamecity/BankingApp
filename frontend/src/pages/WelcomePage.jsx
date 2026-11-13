@@ -9,10 +9,12 @@ import {
   Menu,
   X,
   Check,
-  Wifi,
 } from "lucide-react";
 import { Brand } from "../components/UI.jsx";
+import BankingShowcase from "../components/BankingShowcase.jsx";
+import HeroRocket from "../components/HeroRocket.jsx";
 import { followLink } from "../lib/navigation.js";
+import { projectSavings, SAVINGS_RATE_LABEL } from "../lib/savings.js";
 import "./welcome.css";
 
 const accounts = [
@@ -22,8 +24,8 @@ const accounts = [
     tag: "FOR THE EVERYDAY",
     title: "Life happens. Stay in step.",
     text: "Keep everyday money in focus with a clear view of your balance and account details.",
-    image: "/images/everyday-banking.svg",
-    alt: "Illustration of a banking card and a contactless payment terminal",
+    image: "/images/everyday-banking.svg?v=light-blue-2",
+    alt: "Light blue banking card and payment terminal on a pale blue background",
     features: [
       "Your everyday balance at a glance",
       "Account details in one place",
@@ -39,7 +41,7 @@ const accounts = [
     image: "/images/green-architecture.jpg",
     alt: "Green planted balconies on a modern building",
     features: [
-      "A dedicated space for savings",
+      `${SAVINGS_RATE_LABEL} annual interest in our savings illustration`,
       "An overview of your balances",
       "More clarity for your future plans",
     ],
@@ -83,8 +85,17 @@ export default function WelcomePage() {
   const [months, setMonths] = useState(12);
   const [menu, setMenu] = useState(false);
   const account = accounts[active];
+  const projection = projectSavings(monthly, months);
+  const milestones = [
+    ...new Set(
+      [0.25, 0.5, 0.75, 1].map((fraction) =>
+        Math.max(1, Math.round(months * fraction)),
+      ),
+    ),
+  ];
   return (
     <div className="bank-home">
+      <HeroRocket />
       <header className="home-header">
         <a href="#" className="home-brand" aria-label="Banking home">
           <Brand />
@@ -122,11 +133,9 @@ export default function WelcomePage() {
               <i /> A FRESH PERSPECTIVE ON BANKING
             </span>
             <h1>
-              Your money.
+              A new perspective
               <br />
-              Your life.
-              <br />
-              <em>More possibility.</em>
+              <em>on your money.</em>
             </h1>
             <p>
               For the everyday moments and the someday plans. A simpler way to
@@ -145,41 +154,7 @@ export default function WelcomePage() {
               <span>Your own space. A clearer financial picture.</span>
             </div>
           </div>
-          <div className="home-hero-art">
-            <img
-              className="home-hero-photo"
-              src="/images/green-architecture.jpg"
-              alt="Sunlit architecture with greenery, representing room to grow"
-              fetchPriority="high"
-            />
-            <div className="home-photo-label">
-              A LITTLE ROOM TO GROW <ArrowUpRight size={17} />
-            </div>
-            <div className="home-orbit" />
-            <div className="home-bank-card">
-              <div>
-                <strong>banking.</strong>
-                <Wifi size={25} />
-              </div>
-              <span className="home-card-chip" />
-              <p>•••• &nbsp; •••• &nbsp; •••• &nbsp; 2048</p>
-              <div>
-                <span>EVERYDAY POSSIBILITIES</span>
-                <span className="home-card-circles">◯◯</span>
-              </div>
-            </div>
-            <div className="home-art-note">
-              <span>
-                <Sprout size={24} />
-              </span>
-              <div>
-                Built around you.<strong>And what comes next.</strong>
-              </div>
-            </div>
-            <span className="home-art-caption">
-              Card illustration · A fresh outlook
-            </span>
-          </div>
+          <BankingShowcase />
         </section>
         <section className="home-feature-strip" aria-label="Banking features">
           {[
@@ -287,66 +262,153 @@ export default function WelcomePage() {
           </div>
         </section>
         <section id="possibilities" className="home-planner home-section">
-          <div className="home-planner-story">
-            <img
-              src="/images/alpine-lake.jpg"
-              alt="A quiet mountain lake, inspiration for your next adventure"
-              loading="lazy"
-            />
+          <div className="planner-intro">
             <div>
               <span className="home-eyebrow">FROM SOMEDAY TO A PLAN</span>
               <h2>
-                Big dreams.
-                <br />
-                <em>Little by little.</em>
+                Your next chapter. <em>In numbers.</em>
               </h2>
-              <p>That next adventure starts with a little intention.</p>
+              <p>
+                Choose a monthly deposit and a timeframe. See what you put in,
+                the estimated interest, and the total you could build.
+              </p>
             </div>
+            <img
+              className="planner-blue-photo"
+              src="/images/blue-city.jpg"
+              alt="Blue glass architecture reflecting a clear sky"
+              loading="lazy"
+              width="180"
+              height="140"
+            />
           </div>
           <div className="home-planner-controls">
-            <span className="home-eyebrow">YOUR POSSIBILITY PLANNER</span>
-            <h3>See what adds up.</h3>
-            <p>A small habit today. Something to look forward to.</p>
-            <label htmlFor="monthly-saving">
-              Put aside each month <strong>{money(monthly)}</strong>
-            </label>
-            <input
-              id="monthly-saving"
-              type="range"
-              min="25"
-              max="1500"
-              step="25"
-              value={monthly}
-              onChange={(event) => setMonthly(Number(event.target.value))}
-            />
-            <div className="home-range-labels">
-              <span>$25</span>
-              <span>$1,500</span>
+            <div className="planner-inputs">
+              <span className="home-eyebrow">YOUR POSSIBILITY PLANNER</span>
+              <h3>See what adds up.</h3>
+              <p>A small habit today. Something to look forward to.</p>
+              <div className="savings-rate">
+                <Sprout size={23} />
+                <div>
+                  <strong>{SAVINGS_RATE_LABEL}</strong>
+                  <span>Illustrative annual interest rate</span>
+                </div>
+                <small>
+                  Compounded
+                  <br />
+                  monthly
+                </small>
+              </div>
+              <label htmlFor="monthly-saving">
+                Put aside each month <strong>{money(monthly)}</strong>
+              </label>
+              <input
+                id="monthly-saving"
+                type="range"
+                min="25"
+                max="1500"
+                step="25"
+                value={monthly}
+                aria-valuetext={`${money(monthly)} per month`}
+                onChange={(event) => setMonthly(Number(event.target.value))}
+              />
+              <div className="home-range-labels">
+                <span>$25</span>
+                <span>$1,500</span>
+              </div>
+              <label className="savings-month-label" htmlFor="saving-months">
+                Give it a little time{" "}
+                <strong>
+                  {months} {months === 1 ? "month" : "months"}
+                </strong>
+              </label>
+              <input
+                id="saving-months"
+                type="range"
+                min="1"
+                max="24"
+                step="1"
+                value={months}
+                aria-valuetext={`${months} ${months === 1 ? "month" : "months"}`}
+                onChange={(event) => setMonths(Number(event.target.value))}
+              />
+              <div className="home-range-labels">
+                <span>1 month</span>
+                <span>24 months · max</span>
+              </div>
+              <div className="home-periods">
+                {[6, 12, 24].map((value) => (
+                  <button
+                    key={value}
+                    aria-pressed={months === value}
+                    onClick={() => setMonths(value)}
+                  >
+                    {value} months
+                  </button>
+                ))}
+              </div>
             </div>
-            <span className="home-period-label">Give it a little time</span>
-            <div className="home-periods">
-              {[6, 12, 24].map((value) => (
-                <button
-                  key={value}
-                  aria-pressed={months === value}
-                  onClick={() => setMonths(value)}
+            <div className="planner-results">
+              <div className="home-projection" aria-live="polite">
+                <span>You could end up earning</span>
+                <strong>
+                  {money(projection.interest)}
+                  <Sprout size={30} />
+                </strong>
+                <p className="savings-result-caption">
+                  Estimated interest over {months}{" "}
+                  {months === 1 ? "month" : "months"}
+                </p>
+                <div className="savings-breakdown">
+                  <span>
+                    You put in{" "}
+                    <strong>{money(projection.contributions)}</strong>
+                  </span>
+                  <span>
+                    You could end up with{" "}
+                    <strong>{money(projection.total)}</strong>
+                  </span>
+                </div>
+              </div>
+              <div
+                className="savings-growth"
+                aria-label="Estimated balance over time"
+              >
+                <div className="savings-growth-heading">
+                  <span>YOUR SAVINGS, TAKING SHAPE</span>
+                  <span>Deposits + interest</span>
+                </div>
+                <div
+                  className="savings-growth-bars"
+                  style={{
+                    gridTemplateColumns: `repeat(${milestones.length}, minmax(0, 1fr))`,
+                  }}
                 >
-                  {value} months
-                </button>
-              ))}
+                  {milestones.map((month) => (
+                    <div key={month}>
+                      <strong>
+                        {money(projectSavings(monthly, month).total)}
+                      </strong>
+                      <div className="savings-growth-track">
+                        <span
+                          style={{
+                            height: `${(projectSavings(monthly, month).total / projection.total) * 100}%`,
+                          }}
+                        />
+                      </div>
+                      <small>Month {month}</small>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <small>
+                Illustration assumes a fixed {SAVINGS_RATE_LABEL} annual
+                interest rate, compounded monthly, with deposits at each month’s
+                end and no starting balance. Values rounded to whole dollars;
+                fees and taxes excluded. This is not a confirmed account offer
+                and does not move money.
+              </small>
             </div>
-            <div className="home-projection" aria-live="polite">
-              <span>You could set aside</span>
-              <strong>
-                {money(monthly * months)}
-                <Sprout size={30} />
-              </strong>
-            </div>
-            <small>
-              Planning illustration only. Monthly contributions × months; no
-              interest, fees, or account terms included. This does not move
-              money.
-            </small>
           </div>
         </section>
         <section className="home-cta">
