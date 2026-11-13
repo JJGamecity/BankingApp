@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#173f36" />
+    <meta
+      name="description"
+      content="Your everyday banking, beautifully simple."
+    />
+    <title>BankingApp — A little more possibility</title>
+    <link rel="stylesheet" href="./welcome.css" />
+  </head>
+  <body>
+    <!-- This welcome page renders even before JavaScript loads. React replaces it
+         with the connected banking interface when served through Vite. -->
+    <div id="root">
+      <div class="welcome-page">
+        <header class="welcome-header">
+          <a class="welcome-brand" href="#home" aria-label="Banking home"
+            ><span>▥</span> banking.</a
+          >
+          <nav aria-label="Welcome navigation">
+            <a href="#accounts">Our accounts</a>
+            <a href="#experience">The experience</a
+            ><a href="http://localhost:5173/signup">Sign up</a>
+            <a
+              class="welcome-button welcome-outline"
+              href="http://localhost:5173/login"
+              >Sign in ↗</a
+            >
+          </nav>
+        </header>
+        <main>
+          <section class="welcome-hero" id="home">
+            <div class="welcome-copy">
+              <span class="welcome-kicker">A FRESH PERSPECTIVE ON BANKING</span>
+              <h1>
+                Life moves forward.<br /><em>Your banking<br />should too.</em>
+              </h1>
+              <p>
+                A clearer view of your money. A little more room for your plans.
+                Your everyday banking, beautifully brought together.
+              </p>
+              <div class="welcome-actions">
+                <a
+                  class="welcome-button welcome-dark"
+                  href="http://localhost:5173/login"
+                  >Open my banking <span>↗</span></a
+                ><a href="#accounts">Find your everyday fit ↓</a>
+              </div>
+              <div class="welcome-caption">
+                <span>✦</span> Thoughtfully simple. Refreshingly yours.
+              </div>
+            </div>
+            <div
+              class="welcome-art"
+              aria-label="Illustration of everyday banking"
+            >
+              <span class="welcome-art-label"
+                >MADE FOR WHATEVER COMES NEXT</span
+              >
+              <div class="welcome-ring"></div>
+              <div class="welcome-ring welcome-ring-inner"></div>
+              <div class="welcome-floating">
+                <span>↗</span>
+                <div>
+                  A little clarity.<strong>A world of possibility.</strong>
+                </div>
+              </div>
+              <div class="welcome-card welcome-card-back">
+                <span>YOUR NEXT CHAPTER</span>
+              </div>
+              <div class="welcome-card">
+                <div class="welcome-card-top">
+                  <strong>banking.</strong><span>◉</span>
+                </div>
+                <div class="welcome-chip"></div>
+                <div class="welcome-card-number">
+                  •••• &nbsp; •••• &nbsp; •••• &nbsp; ••••
+                </div>
+                <div class="welcome-card-bottom">
+                  <span>EVERYDAY POSSIBILITIES</span><span>↗</span>
+                </div>
+              </div>
+              <div class="welcome-art-bottom">
+                <span>01 / EVERYDAY, REIMAGINED</span
+                ><span>Illustrative design</span>
+              </div>
+            </div>
+          </section>
+          <section class="welcome-values" id="experience">
+            <div>
+              <span>01</span><strong>Everything in perspective.</strong>
+              <p>See your accounts and available balances in one clear view.</p>
+            </div>
+            <div>
+              <span>02</span><strong>A space that’s yours.</strong>
+              <p>
+                Your profile and account details, together when you need them.
+              </p>
+            </div>
+            <div>
+              <span>03</span><strong>Built around your everyday.</strong>
+              <p>
+                A simple experience from your first sign-in to your next
+                chapter.
+              </p>
+            </div>
+          </section>
+          <section class="welcome-accounts" id="accounts">
+            <div class="welcome-section-heading">
+              <div>
+                <span class="welcome-kicker"
+                  >DIFFERENT PLANS. THE SAME SIMPLE START.</span
+                >
+                <h2>Find your everyday fit.</h2>
+              </div>
+              <p>
+                Ask a bank representative about opening<br />the account that
+                works for you.
+              </p>
+            </div>
+            <div class="welcome-account-grid">
+              <article>
+                <span class="welcome-account-icon">↔</span>
+                <h3>Checking</h3>
+                <p>
+                  A home for your everyday finances. Keep your balance and
+                  account details close.
+                </p>
+                <span class="welcome-account-tag">FOR YOUR DAY TO DAY</span>
+              </article>
+              <article>
+                <span class="welcome-account-icon">✳</span>
+                <h3>Savings</h3>
+                <p>
+                  Make space for the things you’re working toward. Keep your
+                  savings in perspective.
+                </p>
+                <span class="welcome-account-tag">FOR WHAT COMES NEXT</span>
+              </article>
+              <article>
+                <span class="welcome-account-icon">◈</span>
+                <h3>Money market</h3>
+                <p>
+                  Another way to organize your money. Explore your options with
+                  a representative.
+                </p>
+                <span class="welcome-account-tag">FOR YOUR BIGGER PICTURE</span>
+              </article>
+            </div>
+          </section>
+          <section
+            class="welcome-photo-strip"
+            aria-label="Everyday inspiration"
+          >
+            <figure>
+              <img
+                src="/images/green-architecture.jpg"
+                alt="Modern architecture with planted balconies"
+                loading="lazy"
+                width="1200"
+                height="800"
+              />
+              <figcaption>Room to grow. Space to make it yours.</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="/images/alpine-lake.jpg"
+                alt="A peaceful alpine lake between forested mountains"
+                loading="lazy"
+                width="1200"
+                height="800"
+              />
+              <figcaption>A fresh perspective on what comes next.</figcaption>
+            </figure>
+          </section>
+          <section class="welcome-start">
+            <div>
+              <span class="welcome-kicker">YOUR NEXT CHAPTER</span>
+              <h2>A little more possibility<br />starts right here.</h2>
+            </div>
+            <a
+              class="welcome-button welcome-dark"
+              href="http://localhost:5173/login"
+              >Continue to my banking ↗</a
+            >
+          </section>
+          <aside class="welcome-setup">
+            <strong>Opening this file in IntelliJ?</strong>
+            <p>
+              To use the interactive React app, run
+              <code>npm.cmd run dev</code> inside the
+              <code>frontend</code> folder, then open
+              <a href="http://localhost:5173/login">localhost:5173</a>. Start
+              your Java backend for sign-in and account data.
+            </p>
+          </aside>
+        </main>
+        <footer class="welcome-footer">
+          <a class="welcome-brand" href="#home">banking.</a
+          ><span>A simpler relationship with your money.</span
+          ><span>Made for your everyday ↗</span>
+        </footer>
+      </div>
+    </div>
+    <noscript
+      ><p class="welcome-setup">
+        JavaScript is disabled. Enable it to sign in and view your accounts.
+      </p></noscript
+    >
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "banking-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host localhost --port 5173 --strictPort",
+    "start": "npm run dev",
+    "build": "vite build",
+    "preview": "vite preview --host localhost --port 5173 --strictPort",
+    "format": "prettier --write src index.html vite.config.js package.json README.md"
+  },
+  "dependencies": {
+    "lucide-react": "^1.72.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.3.0",
+    "prettier": "^3.10.1",
+    "vite": "^8.3.8"
+  },
+  "version": "2.0.0"
+}
