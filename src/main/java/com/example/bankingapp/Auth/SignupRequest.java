@@ -1,7 +1,7 @@
 package com.example.bankingapp.Auth;
 
-import com.example.bankingapp.validation.ValidPassword;
-import com.example.bankingapp.validation.MinimumAge;
+import com.example.bankingapp.Validation.ValidPassword;
+import com.example.bankingapp.Validation.MinimumAge;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -8,6 +8,14 @@ import com.example.bankingapp.Staff.StaffRepository;
 import com.example.bankingapp.Staff.StaffRole;
 import com.example.bankingapp.User.User;
 import com.example.bankingapp.User.UserRepository;
+import com.example.bankingapp.User.UserService;
+import com.example.bankingapp.Account.AccountService;
+import com.example.bankingapp.Auth.SignupService;
+import com.example.bankingapp.Auth.SignupRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.access.AccessDeniedException;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
@@ -41,7 +49,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(properties = {
-        "spring.security.user.name=", "spring.security.user.password=",
+        "spring.security.user.name=testrepresentative", "spring.security.user.password=Test!Rep908",
         "bank.security.admin.username=bootstrapadmin", "bank.security.admin.password=Test!Admin908",
         "bank.security.google.enabled=false", "bank.security.login-attempts-per-minute=10000",
         "spring.flyway.baseline-on-migrate=false", "spring.jpa.hibernate.ddl-auto=validate"
@@ -213,7 +221,7 @@ class BackendPostgresIT {
                 .replace("\"Smith\"", "\"Surname\"").replace("1995-06-15", "1988-02-03")
                 .replace("}", ",\"creditScore\":740}");
         mvc.perform(csrf(put("/users/" + customer.getId()).contentType("application/json").content(payload),
-                login("bootstrapadmin", "Test!Admin908"))).andExpect(status().isNoContent());
+                login("testrepresentative", "Test!Rep908"))).andExpect(status().isNoContent());
         var updated = users.findById(customer.getId()).orElseThrow();
         assertEquals("Updated", updated.getFirstName());
         assertEquals("Surname", updated.getLastName());
@@ -232,6 +240,79 @@ class BackendPostgresIT {
                 "hash", unique(), "Other", "Person", LocalDate.of(1990, 1, 1), null)));
         assertEquals(0, flyway.info().pending().length);
         flyway.validate();
+    }
+
+    @Test void databaseAdminCanCreateAndListStaffButCannotUseBankingOrSignup() throws Exception {
+        String adminName = unique();
+        var bootstrap = login("bootstrapadmin", "Test!Admin908");
+        mvc.perform(csrf(post("/staff").contentType("application/json").content("""
+                {"username":"%s","password":"James!90758","role":"ADMIN"}
+                """.formatted(adminName)), bootstrap)).andExpect(status().isCreated());
+        var session = login(adminName, "James!90758");
+        mvc.perform(get("/auth/me").session(session)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.customerId").isEmpty());
+        mvc.perform(get("/staff").session(session)).andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].username", org.hamcrest.Matchers.hasItem(adminName)))
+                .andExpect(jsonPath("$[*].password").doesNotExist());
+        for (String path : List.of("/users", "/users/1", "/users/me", "/accounts/me", "/accounts/me/1", "/accounts/user-1")) {
+            mvc.perform(get(path).session(session)).andExpect(status().isForbidden());
+        }
+        mvc.perform(csrf(post("/accounts").contentType("application/json").content(
+                "{\"userId\":1,\"accountNumber\":\"blocked\",\"accountType\":\"CHECKING\"}"), session))
+                .andExpect(status().isForbidden());
+        mvc.perform(csrf(post("/auth/signup").contentType("application/json").content(signupJson(unique())), session))
+                .andExpect(status().isForbidden());
+        assertTrue(users.findByUsername(adminName).isEmpty());
+        assertEquals(0, jdbc.queryForObject("select count(*) from account a join users u on a.user_id=u.id where u.username=?",
+                Integer.class, adminName));
+    }
+
+    @Test void representativeCannotBecomeACustomerButCanManageCustomerAccounts() throws Exception {
+        String representativeName = unique();
+        staff.saveAndFlush(new StaffAccount(representativeName, passwords.encode("James!90758"), StaffRole.BANK_REPRESENTATIVE));
+        var session = login(representativeName, "James!90758");
+        mvc.perform(get("/auth/me").session(session)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.roles[0]").value("BANK_REPRESENTATIVE"))
+                .andExpect(jsonPath("$.customerId").isEmpty());
+        for (String path : List.of("/users/me", "/accounts/me", "/accounts/me/1", "/staff", "/oauth2/authorization/google")) {
+            mvc.perform(get(path).session(session)).andExpect(status().isForbidden());
+        }
+        String newCustomer = unique();
+        mvc.perform(csrf(post("/auth/signup").contentType("application/json").content(signupJson(newCustomer)), session))
+                .andExpect(status().isForbidden());
+        assertTrue(users.findByUsername(newCustomer).isEmpty());
+        assertTrue(users.findByUsername(representativeName).isEmpty());
+        var owner = customer(unique());
+        String accountNumber = unique();
+        mvc.perform(csrf(post("/accounts").contentType("application/json").content("""
+                {"userId":%d,"accountNumber":"%s","accountType":"CHECKING"}
+                """.formatted(owner.getId(), accountNumber)), session))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.userId").value(owner.getId()));
+        mvc.perform(get("/accounts/user-" + owner.getId()).session(session)).andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].accountNumber").value(accountNumber));
+        var securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(UsernamePasswordAuthenticationToken.authenticated(representativeName, null,
+                List.of(new SimpleGrantedAuthority("ROLE_BANK_REPRESENTATIVE"))));
+        SecurityContextHolder.setContext(securityContext);
+        try {
+            assertThrows(AccessDeniedException.class, () -> context.getBean(SignupService.class).create(
+                    new SignupRequest("blocked@example.test", "blocked", "James!90758",
+                            "James", "Smith", LocalDate.of(1990, 1, 1))));
+        } finally { SecurityContextHolder.clearContext(); }
+    }
+
+    @Test void servicesAlsoRejectAdminAccessToCustomerData() {
+        var securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(UsernamePasswordAuthenticationToken.authenticated(
+                "admin", null, List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
+        SecurityContextHolder.setContext(securityContext);
+        try {
+            assertThrows(AccessDeniedException.class, () -> context.getBean(UserService.class).getAllUsers());
+            assertThrows(AccessDeniedException.class, () -> context.getBean(AccountService.class).getAccounts(1L));
+            assertThrows(AccessDeniedException.class, () -> context.getBean(SignupService.class).create(
+                    new SignupRequest("blocked@example.test", "blocked", "James!90758",
+                            "James", "Smith", LocalDate.of(1990, 1, 1))));
+        } finally { SecurityContextHolder.clearContext(); }
     }
 
     @Test void concurrentCustomerAndStaffCreationCannotClaimTheSameLogin() throws Exception {

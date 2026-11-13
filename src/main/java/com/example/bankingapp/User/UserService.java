@@ -6,6 +6,7 @@ import com.example.bankingapp.User.DTOs.UserRequest;
 import com.example.bankingapp.User.DTOs.UserResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.bankingapp.Staff.LoginNamePolicy;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 
 @Service
+@PreAuthorize("!hasRole('ADMIN')")
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;

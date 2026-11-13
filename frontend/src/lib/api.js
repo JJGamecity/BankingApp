@@ -62,8 +62,4 @@ export const money = (value) =>
         style: "currency",
         currency: "USD",
       }).format(value);
-export const accountName = (value) =>
-  String(value || "")
-    .toLowerCase()
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+export { accountName } from "./formatters.js";

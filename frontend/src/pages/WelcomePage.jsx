@@ -9,10 +9,14 @@ import {
   Menu,
   X,
   Check,
-  Wifi,
+  Mountain,
+  CalendarDays,
 } from "lucide-react";
 import { Brand } from "../components/UI.jsx";
+import SiteFooter from "../components/SiteFooter.jsx";
+import BankingShowcase from "../components/BankingShowcase.jsx";
 import { followLink } from "../lib/navigation.js";
+import { projectSavings, SAVINGS_RATE_LABEL } from "../lib/savings.js";
 import "./welcome.css";
 
 const accounts = [
@@ -39,7 +43,7 @@ const accounts = [
     image: "/images/green-architecture.jpg",
     alt: "Green planted balconies on a modern building",
     features: [
-      "A dedicated space for savings",
+      `${SAVINGS_RATE_LABEL} annual interest rate in the savings illustration`,
       "An overview of your balances",
       "More clarity for your future plans",
     ],
@@ -83,6 +87,14 @@ export default function WelcomePage() {
   const [months, setMonths] = useState(12);
   const [menu, setMenu] = useState(false);
   const account = accounts[active];
+  const projection = projectSavings(monthly, months);
+  const milestones = [
+    ...new Set(
+      [0.25, 0.5, 0.75, 1].map((fraction) =>
+        Math.max(1, Math.round(months * fraction)),
+      ),
+    ),
+  ];
   return (
     <div className="bank-home">
       <header className="home-header">
@@ -122,11 +134,9 @@ export default function WelcomePage() {
               <i /> A FRESH PERSPECTIVE ON BANKING
             </span>
             <h1>
-              Your money.
+              A new perspective
               <br />
-              Your life.
-              <br />
-              <em>More possibility.</em>
+              <em>on your money.</em>
             </h1>
             <p>
               For the everyday moments and the someday plans. A simpler way to
@@ -145,41 +155,7 @@ export default function WelcomePage() {
               <span>Your own space. A clearer financial picture.</span>
             </div>
           </div>
-          <div className="home-hero-art">
-            <img
-              className="home-hero-photo"
-              src="/images/green-architecture.jpg"
-              alt="Sunlit architecture with greenery, representing room to grow"
-              fetchPriority="high"
-            />
-            <div className="home-photo-label">
-              A LITTLE ROOM TO GROW <ArrowUpRight size={17} />
-            </div>
-            <div className="home-orbit" />
-            <div className="home-bank-card">
-              <div>
-                <strong>banking.</strong>
-                <Wifi size={25} />
-              </div>
-              <span className="home-card-chip" />
-              <p>•••• &nbsp; •••• &nbsp; •••• &nbsp; 2048</p>
-              <div>
-                <span>EVERYDAY POSSIBILITIES</span>
-                <span className="home-card-circles">◯◯</span>
-              </div>
-            </div>
-            <div className="home-art-note">
-              <span>
-                <Sprout size={24} />
-              </span>
-              <div>
-                Built around you.<strong>And what comes next.</strong>
-              </div>
-            </div>
-            <span className="home-art-caption">
-              Card illustration · A fresh outlook
-            </span>
-          </div>
+          <BankingShowcase />
         </section>
         <section className="home-feature-strip" aria-label="Banking features">
           {[
@@ -301,12 +277,28 @@ export default function WelcomePage() {
                 <em>Little by little.</em>
               </h2>
               <p>That next adventure starts with a little intention.</p>
+              <div className="home-dream-tags">
+                <span>
+                  <Mountain size={15} /> The next adventure
+                </span>
+                <span>
+                  <Sprout size={15} /> A fresh beginning
+                </span>
+              </div>
             </div>
           </div>
           <div className="home-planner-controls">
             <span className="home-eyebrow">YOUR POSSIBILITY PLANNER</span>
             <h3>See what adds up.</h3>
             <p>A small habit today. Something to look forward to.</p>
+            <div className="home-interest-rate">
+              <Sprout size={20} />
+              <div>
+                <strong>{SAVINGS_RATE_LABEL}</strong>
+                <span>Annual interest rate · illustrative</span>
+              </div>
+              <small>Compounded monthly</small>
+            </div>
             <label htmlFor="monthly-saving">
               Put aside each month <strong>{money(monthly)}</strong>
             </label>
@@ -317,13 +309,33 @@ export default function WelcomePage() {
               max="1500"
               step="25"
               value={monthly}
+              aria-valuetext={`${money(monthly)} per month`}
               onChange={(event) => setMonthly(Number(event.target.value))}
             />
             <div className="home-range-labels">
               <span>$25</span>
               <span>$1,500</span>
             </div>
-            <span className="home-period-label">Give it a little time</span>
+            <label className="home-month-label" htmlFor="saving-months">
+              Give it a little time{" "}
+              <strong>
+                {months} {months === 1 ? "month" : "months"}
+              </strong>
+            </label>
+            <input
+              id="saving-months"
+              type="range"
+              min="1"
+              max="24"
+              step="1"
+              value={months}
+              aria-valuetext={`${months} ${months === 1 ? "month" : "months"}`}
+              onChange={(event) => setMonths(Number(event.target.value))}
+            />
+            <div className="home-range-labels">
+              <span>1 month</span>
+              <span>24 months · max</span>
+            </div>
             <div className="home-periods">
               {[6, 12, 24].map((value) => (
                 <button
@@ -336,15 +348,64 @@ export default function WelcomePage() {
               ))}
             </div>
             <div className="home-projection" aria-live="polite">
-              <span>You could set aside</span>
+              <span>You could end up earning</span>
               <strong>
-                {money(monthly * months)}
+                {money(projection.interest)}
                 <Sprout size={30} />
               </strong>
+              <p className="home-projection-context">
+                Estimated interest over {months}{" "}
+                {months === 1 ? "month" : "months"}
+              </p>
+              <div className="home-projection-breakdown">
+                <span>
+                  Your contributions{" "}
+                  <strong>{money(projection.contributions)}</strong>
+                </span>
+                <span>
+                  Estimated total balance{" "}
+                  <strong>{money(projection.total)}</strong>
+                </span>
+              </div>
+            </div>
+            <div
+              className="home-savings-timeline"
+              aria-label={`Savings timeline: ${money(monthly)} contributed monthly for ${months} months`}
+            >
+              <div className="home-timeline-heading">
+                <span>
+                  <CalendarDays size={14} /> YOUR PLAN, TAKING SHAPE
+                </span>
+                <span>
+                  {months} {months === 1 ? "month" : "months"}
+                </span>
+              </div>
+              <div
+                className="home-timeline-bars"
+                style={{
+                  gridTemplateColumns: `repeat(${milestones.length}, minmax(0, 1fr))`,
+                }}
+              >
+                {milestones.map((month, index) => (
+                  <div className="home-timeline-step" key={index}>
+                    <span>{money(projectSavings(monthly, month).total)}</span>
+                    <div className="home-timeline-track">
+                      <div
+                        style={{
+                          height: `${(projectSavings(monthly, month).total / projection.total) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <small>Month {month}</small>
+                  </div>
+                ))}
+              </div>
             </div>
             <small>
-              Planning illustration only. Monthly contributions × months; no
-              interest, fees, or account terms included. This does not move
+              Illustration assumes a fixed {SAVINGS_RATE_LABEL} annual interest
+              rate, compounded monthly, with deposits at each month’s end and no
+              starting balance. Rounded to the nearest dollar; fees and taxes
+              excluded. This is not a confirmed account offer and does not move
               money.
             </small>
           </div>
@@ -363,11 +424,7 @@ export default function WelcomePage() {
           </AppLink>
         </section>
       </main>
-      <footer className="home-footer">
-        <Brand />
-        <span>A simpler relationship with your money.</span>
-        <a href="#">Back to top ↑</a>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

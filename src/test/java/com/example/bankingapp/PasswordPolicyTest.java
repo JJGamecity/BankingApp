@@ -3,7 +3,7 @@ package com.example.bankingapp;
 import com.example.bankingapp.User.DTOs.UserRequest;
 import com.example.bankingapp.Staff.StaffRequest;
 import com.example.bankingapp.Staff.StaffRole;
-import com.example.bankingapp.validation.PasswordValidator;
+import com.example.bankingapp.Validation.PasswordValidator;
 import jakarta.validation.Validation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

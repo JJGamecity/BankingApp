@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -11,6 +11,7 @@ import { Brand, Field, Notice, SecurityNote } from "../components/UI.jsx";
 import { API_URL, request, resetCsrf } from "../lib/api.js";
 import { navigate, followLink } from "../lib/navigation.js";
 import EditorialGallery from "../components/EditorialGallery.jsx";
+import SiteFooter from "../components/SiteFooter.jsx";
 
 export default function AuthPage({ onSession, initialMessage, mode }) {
   const setMode = (value) =>
@@ -21,7 +22,22 @@ export default function AuthPage({ onSession, initialMessage, mode }) {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [capsLock, setCapsLock] = useState(false);
+  const [googleAvailable, setGoogleAvailable] = useState(null);
+  const [googleError, setGoogleError] = useState("");
   const signup = mode === "signup";
+
+  useEffect(() => {
+    const controller = new AbortController();
+    request("/auth/options", { signal: controller.signal })
+      .then((options) => setGoogleAvailable(options.googleSignInEnabled === true))
+      .catch((error) => {
+        if (error.name !== "AbortError") {
+          setGoogleAvailable(false);
+          setGoogleError("We could not check Google sign-in availability. Refresh the page to try again.");
+        }
+      });
+    return () => controller.abort();
+  }, []);
 
   async function submit(event) {
     event.preventDefault();
@@ -256,9 +272,11 @@ export default function AuthPage({ onSession, initialMessage, mode }) {
           <div className="divider">
             <span>or continue with</span>
           </div>
-          <a
+          <button
+            type="button"
             className="button button-google full-width"
-            href={`${API_URL}/oauth2/authorization/google`}
+            disabled={busy || googleAvailable !== true}
+            onClick={() => window.location.assign(`${API_URL}/oauth2/authorization/google`)}
           >
             <img
               className="google-logo"
@@ -270,7 +288,14 @@ export default function AuthPage({ onSession, initialMessage, mode }) {
             <span>
               {signup ? "Sign up with Google" : "Sign in with Google"}
             </span>
-          </a>
+          </button>
+          {googleAvailable !== true && (
+            <p className="google-help" role="status">
+              {googleAvailable === null
+                ? "Checking Google sign-in availability…"
+                : googleError || "Google sign-in is currently unavailable. Please use your username and password."}
+            </p>
+          )}
           <p className="google-help">
             Already signed in with Google?{" "}
             <button className="text-button" disabled={busy} onClick={onSession}>
@@ -297,7 +322,7 @@ export default function AuthPage({ onSession, initialMessage, mode }) {
             </details>
           </div>
         </div>
-        <p className="auth-bottom">A simpler relationship with your money.</p>
+        <SiteFooter compact />
       </section>
     </main>
   );

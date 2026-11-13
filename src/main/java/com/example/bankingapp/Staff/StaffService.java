@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Sort;
+import java.util.List;
 
 @Service
 public class StaffService {
@@ -26,5 +28,12 @@ public class StaffService {
         account.recordCreator(SecurityContextHolder.getContext().getAuthentication().getName());
         var staff = repository.saveAndFlush(account);
         return new StaffResponse(staff.getId(), staff.getUsername(), staff.getRole());
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<StaffResponse> list() {
+        return repository.findAll(Sort.by("id")).stream()
+                .map(staff -> new StaffResponse(staff.getId(), staff.getUsername(), staff.getRole())).toList();
     }
 }

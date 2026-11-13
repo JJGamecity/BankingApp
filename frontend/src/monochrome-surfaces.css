@@ -1,0 +1,126 @@
+/* Pale blue surfaces with white cards and blue and teal interactive accents. */
+:root {
+  background: #edf6ff;
+  --border: #ccdef0;
+  --surface: #ffffff;
+}
+body,
+.app-layout,
+.main-column,
+.workspace,
+.auth-layout,
+.auth-content {
+  background: #edf6ff;
+}
+.bank-home {
+  --soft: #edf6ff;
+  background: #edf6ff;
+}
+.topbar,
+.sidebar,
+.home-header,
+.bank-home .home-header nav.is-open {
+  background: #ffffff;
+}
+.home-feature-strip,
+.home-account-tabs,
+.home-interest-rate,
+.home-projection,
+.home-periods button[aria-pressed="true"],
+.sidebar-promo,
+.possibility-card,
+.auth-tabs,
+.small-logo,
+.compass-icon,
+.compass-account[aria-pressed="true"],
+.balance-privacy-toolbar button:not([aria-pressed="true"]),
+.session-exit {
+  background: #e3effc;
+  border-color: #c8dcee;
+}
+.money-compass,
+.home-savings-timeline,
+.compass-center,
+.account-card,
+.panel {
+  background: #ffffff;
+  border-color: #ccdef0;
+}
+.home-cta,
+.auth-story,
+.balance-card,
+.credit-card {
+  background: #dcecff;
+  color: #253449;
+  border: 1px solid #c7ddf3;
+}
+.auth-story::before {
+  background-image: none;
+}
+.balance-card::after {
+  border-color: #b7d5f24d;
+}
+.story-copy p,
+.story-footer,
+.balance-card p,
+.balance-card .eyebrow,
+.balance-bottom,
+.credit-eyebrow,
+.credit-card-content > p,
+.credit-card-note,
+.credit-score-inner > span:first-child,
+.credit-score-inner > span:last-child,
+.home-cta .home-eyebrow {
+  color: #626b78;
+}
+.story-copy em,
+.credit-card h2 em,
+.home-cta em {
+  color: #42647e;
+}
+.auth-story .pill {
+  color: #526070;
+  border-color: #bed4e9;
+}
+.credit-card-actions button,
+.credit-card-note button {
+  color: #294b69;
+}
+.credit-privacy,
+.credit-card-note button {
+  border-color: #bfd3e6;
+  background: #ffffff;
+}
+.credit-privacy:hover {
+  background: #d4e7fb;
+  border-color: #8daecf;
+}
+.credit-score-inner {
+  background: #edf6ff;
+  border-color: #c2d9ef;
+}
+.credit-score-orbit {
+  border-color: #97b8d8;
+  box-shadow: 0 0 0 12px #d0e4f9;
+}
+.credit-card-note,
+.balance-bottom {
+  border-color: #bed7ee;
+}
+.home-hero-art {
+  background: #e2effc;
+}
+.home-hero-art::after {
+  background: linear-gradient(0deg, #20242cb8, transparent 80%);
+}
+.home-planner-story::after {
+  background: linear-gradient(transparent, #20242ce6);
+}
+.compass-ring {
+  box-shadow:
+    0 0 0 10px #e8f3ff,
+    0 0 0 11px #ccdef0;
+}
+.bank-footer {
+  border-color: #c8dcee;
+}

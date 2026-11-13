@@ -1,6 +1,7 @@
 package com.example.bankingapp;
 
 import com.example.bankingapp.Google.*;
+import com.example.bankingapp.Auth.AuthOptionsController;
 import com.example.bankingapp.Staff.LoginNamePolicy;
 import com.example.bankingapp.Staff.StaffRepository;
 import com.example.bankingapp.User.User;
@@ -52,7 +53,8 @@ class GoogleSignupTest {
     @EnableWebSecurity
     @EnableWebMvc
     @Import({SecurityConfig.class, GoogleOAuthConfiguration.class, GoogleSignupService.class,
-            GoogleSignupController.class, LoginNamePolicy.class, MainExceptionHandler.class, CsrfController.class})
+            GoogleSignupController.class, LoginNamePolicy.class, MainExceptionHandler.class, CsrfController.class,
+            AuthOptionsController.class})
     static class Config {
         @Bean UserRepository users() { return mock(UserRepository.class); }
         @Bean StaffRepository staff() { return mock(StaffRepository.class); }
@@ -112,6 +114,31 @@ class GoogleSignupTest {
                 .andExpect(header().string("Location", containsString("https://accounts.google.com")))
                 .andExpect(header().string("Location", containsString("state=")))
                 .andExpect(header().string("Location", containsString("nonce=")));
+    }
+
+    @Test
+    void anonymousFrontendCanDiscoverThatGoogleIsEnabledWithoutCredentials() throws Exception {
+        mvc.perform(get("/auth/options")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.googleSignInEnabled").value(true))
+                .andExpect(jsonPath("$.clientId").doesNotExist())
+                .andExpect(jsonPath("$.clientSecret").doesNotExist());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"ADMIN", "BANK_REPRESENTATIVE"})
+    void enabledGoogleFiltersCannotReplaceAStaffSession(String role) throws Exception {
+        var security = SecurityContextHolder.createEmptyContext();
+        security.setAuthentication(org.springframework.security.authentication.UsernamePasswordAuthenticationToken.authenticated(
+                "staff", null, List.of(new SimpleGrantedAuthority("ROLE_" + role))));
+        var session = new MockHttpSession();
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, security);
+        for (String path : List.of("/oauth2/authorization/google", "/login/oauth2/code/google")) {
+            mvc.perform(get(path).session(session)).andExpect(status().isForbidden());
+            mvc.perform(get(path).header("Authorization", "Basic ignored-by-oauth"))
+                    .andExpect(status().isForbidden());
+        }
+        assertEquals("staff", security.getAuthentication().getName());
+        verifyNoInteractions(users);
     }
 
     @Test

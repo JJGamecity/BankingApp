@@ -164,12 +164,17 @@ Success returns `201` and the customer profile, without a password. It does not
 automatically log in or open a bank account; use `/login` next. Every public signup
 is a CUSTOMER, with an initially null credit score. Submitted role, credit score,
 or Google identity fields cannot grant privileges. Duplicate usernames/emails return
-`409`; email uniqueness is case insensitive. Staff can still use `POST /users`.
+`409`; email uniqueness is case insensitive. Bank representatives can still use `POST /users`.
 
 ## Sign up with Google
 
 Google signup works in a browser without a separate frontend. It is disabled by
 default until you supply OAuth credentials from your Google Cloud project.
+The frontend checks public `GET /auth/options` and enables its Google button only
+when `googleSignInEnabled` is true. If it is false, configure the three `.env`
+entries below, restart the backend, and refresh the frontend. The endpoint exposes
+only availability, never OAuth credentials. Staff sessions must sign out before
+starting a separate customer login.
 
 1. In Google Cloud's Google Auth Platform, configure your application's audience
    and consent information, then create an **OAuth client for a Web application**.
@@ -217,12 +222,22 @@ for OAuth client setup and redirect URI requirements.
 
 | Role | Permissions |
 | --- | --- |
-| `ADMIN` | All implemented user/account commands and staff creation |
-| `BANK_REPRESENTATIVE` | Create, view, and update customers and bank accounts; cannot create staff |
+| `ADMIN` | Create and list staff; administrative documentation. No customer or bank-account access |
+| `BANK_REPRESENTATIVE` | Manage customers and their bank accounts; no personal customer account/signup or staff management |
 | `CUSTOMER` | View their own profile and accounts using their authenticated database user ID |
 
 Customers cannot grant themselves a staff role. Staff creation is checked at both
 the HTTP and service layers. Unknown endpoints are denied by default.
+
+Admins and bank representatives are staff identities, with no customer ID or
+personal bank-account ownership. Neither staff role can use customer signup
+(including Google) or personal `/users/me` and `/accounts/me` endpoints. Representatives
+can manage customers' bank accounts through the staff commands; admins cannot.
+Customer/account services also reject ADMIN access.
+After browser login, admins land on `GET /staff`, which lists database-backed staff
+IDs, usernames, and roles without password hashes. Configured bootstrap logins are
+in memory and are not included in that list. Representatives continue to manage
+customers and bank accounts. Every role retains `/auth/me`, CSRF, and logout access.
 
 ## Create staff using Postman
 
@@ -271,7 +286,7 @@ Representatives and customers receive `403` when attempting staff creation.
 
 ## Create a customer and their bank account
 
-As an admin or Bank Representative, send `POST /users` with the same authentication,
+As a Bank Representative, send `POST /users` with the same authentication,
 CSRF header, and session-cookie setup:
 
 ```json
@@ -330,7 +345,7 @@ accounts receives `[]`. The owner is determined by the authenticated identity;
 supplying a different `userId` or `id` query parameter cannot select another owner.
 The response does not include login credentials and is marked `no-store`.
 
-This endpoint is for customer identities. Admins and representatives use
+This endpoint is for customer identities. Bank representatives use
 `GET /accounts/user-{id}` when viewing customer accounts.
 
 Customers can also send these GET requests with the same login:
@@ -354,23 +369,25 @@ Paths below are relative to `http://localhost:5050`.
 | Method | Path | Purpose | Access |
 | --- | --- | --- | --- |
 | `POST` | `/staff` | Create an admin or representative | Admin |
-| `POST` | `/users` | Create a customer | Admin / representative |
-| `GET` | `/users` | List customers | Admin / representative |
-| `GET` | `/users/{id}` | Read a customer | Admin / representative |
+| `GET` | `/staff` | List database-backed staff without credentials | Admin |
+| `POST` | `/users` | Create a customer | Representative |
+| `GET` | `/users` | List customers | Representative |
+| `GET` | `/users/{id}` | Read a customer | Representative |
 | `GET` | `/users/me` | View own customer profile | Customer |
-| `PUT` | `/users/{id}` | Update a customer | Admin / representative |
-| `POST` | `/accounts` | Create a bank account | Admin / representative |
-| `PUT` | `/accounts?id={accountId}` | Update a bank account | Admin / representative |
+| `PUT` | `/users/{id}` | Update a customer | Representative |
+| `POST` | `/accounts` | Create a bank account | Representative |
+| `PUT` | `/accounts?id={accountId}` | Update a bank account | Representative |
 | `GET` | `/accounts/me` | View own accounts, balances, and bank details | Customer |
 | `GET` | `/accounts/me/{accountId}` | View one owned account | Customer |
-| `GET` | `/accounts/user-{id}` | List a customer's accounts | Admin / representative / owning customer |
+| `GET` | `/accounts/user-{id}` | List a customer's accounts | Representative / owning customer |
 | `GET` | `/csrf` | Retrieve a CSRF token and establish a session | Public |
 | `GET` | `/auth/me` | Current username, customer ID, roles, and signup status | Any authenticated user |
-| `POST` | `/auth/signup` | Create a password-based CUSTOMER profile | Public + CSRF |
+| `GET` | `/auth/options` | Whether Google sign-in is enabled; no credentials | Public |
+| `POST` | `/auth/signup` | Create a password-based CUSTOMER profile | Public + CSRF; staff sessions denied |
 | `POST` | `/login` | Form-encoded credentials; JSON clients receive `204` | Public + CSRF |
 | `POST` | `/logout` | Invalidate the session | CSRF |
 | `GET` | `/login` | Browser login page | Public |
-| `GET` | `/oauth2/authorization/google` | Start Google login/signup when enabled | Public |
+| `GET` | `/oauth2/authorization/google` | Start Google login/signup when enabled | Public; staff sessions denied; no Authorization header |
 | `GET` | `/signup/google` | Required Google profile-completion form | Incomplete Google signup |
 | `POST` | `/signup/google` | Submit form-encoded username, first name, last name and DOB | Incomplete Google signup + CSRF |
 | `POST` | `/logout` | End the browser session | Valid CSRF token required |

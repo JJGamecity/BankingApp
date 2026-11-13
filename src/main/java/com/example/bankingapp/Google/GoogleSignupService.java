@@ -44,7 +44,7 @@ public class GoogleSignupService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('GOOGLE_PENDING')")
+    @PreAuthorize("hasRole('GOOGLE_PENDING') and !hasAnyRole('ADMIN', 'BANK_REPRESENTATIVE')")
     public User complete(OidcUser principal, @Valid GoogleSignupRequest request) {
         String subject = verifiedSubject(principal);
         var existing = users.findByGoogleSubject(subject);

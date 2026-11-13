@@ -6,6 +6,7 @@ import AuthPage from "./pages/AuthPage.jsx";
 import CustomerPage from "./pages/CustomerPage.jsx";
 import StaffPage from "./pages/StaffPage.jsx";
 import WelcomePage from "./pages/WelcomePage.jsx";
+import SignOutButton from "./components/SignOutButton.jsx";
 import { navigate, paths, usePath } from "./lib/navigation.js";
 
 export default function App() {
@@ -23,9 +24,12 @@ export default function App() {
         : paths[next],
     );
   const [busy, setBusy] = useState(false);
+  const [targetAccountId, setTargetAccountId] = useState(null);
+  const consumeAccountTarget = useCallback(() => setTargetAccountId(null), []);
 
   const expired = useCallback(() => {
     resetCsrf();
+    setTargetAccountId(null);
     setMessage("Your session has expired. Please sign in again.");
     setSession(null);
     navigate("/login", true);
@@ -95,6 +99,7 @@ export default function App() {
     try {
       await request("/logout", { method: "POST" });
       resetCsrf();
+      setTargetAccountId(null);
       setSession(null);
       sessionStorage.removeItem("banking:returnTo");
       navigate("/login", true);
@@ -132,9 +137,7 @@ export default function App() {
           Check my session
         </button>
         <Notice>{message}</Notice>
-        <button className="text-button" disabled={busy} onClick={logout}>
-          Sign out
-        </button>
+        <SignOutButton busy={busy} onLogout={logout} />
       </div>
     );
 
@@ -147,6 +150,11 @@ export default function App() {
         setMessage("");
       }}
       onLogout={logout}
+      onExpired={expired}
+      onAccountSelect={(id) => {
+        setTargetAccountId(id);
+        setPage("accounts");
+      }}
       busy={busy}
     >
       <Notice>{message}</Notice>
@@ -156,6 +164,8 @@ export default function App() {
           page={page}
           onNavigate={setPage}
           onExpired={expired}
+          targetAccountId={targetAccountId}
+          onAccountTargetConsumed={consumeAccountTarget}
         />
       ) : (
         <StaffPage

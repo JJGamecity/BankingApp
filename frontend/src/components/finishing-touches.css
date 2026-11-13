@@ -1,0 +1,405 @@
+.session-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 7px 13px 7px 7px;
+  border: 1px solid #dceafa;
+  border-radius: 14px;
+  color: #28527a;
+  background: linear-gradient(120deg, #e8f5f3, #edf4fc);
+  box-shadow: 0 3px 9px #28527a06;
+  text-align: left;
+  min-height: 52px;
+}
+.session-exit-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: #e8f5f3;
+  background: #315d83;
+  transition: background 0.2s;
+}
+.session-exit-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.session-exit-copy strong {
+  font-size: 12px;
+  font-weight: 650;
+}
+.session-exit-copy small {
+  font-size: 9px;
+  color: #64778d;
+}
+.session-exit-arrow {
+  margin-left: 9px;
+  color: #64778d;
+  transition: transform 0.2s;
+}
+.session-exit:hover:not(:disabled) {
+  border-color: #168079;
+  box-shadow: 0 5px 16px #28527a12;
+  transform: translateY(-1px);
+}
+.session-exit:hover:not(:disabled) .session-exit-arrow {
+  transform: translate(2px, -2px);
+}
+.session-exit:hover:not(:disabled) .session-exit-icon {
+  background: #176e75;
+}
+.session-exit:disabled {
+  cursor: wait;
+}
+.bank-footer {
+  border-top: 1px solid #dceafa;
+  margin-top: 45px;
+  padding: 30px 0 8px;
+  color: #176e75;
+}
+.bank-footer-top {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 1fr;
+  gap: 35px;
+}
+.bank-footer .brand {
+  font-size: 24px;
+  color: #28527a;
+}
+.bank-footer .brand-icon {
+  width: 32px;
+  height: 32px;
+}
+.bank-footer .brand-icon svg {
+  width: 19px;
+}
+.bank-footer-brand p {
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 15px 0 10px;
+  color: #64778d;
+}
+.bank-footer-brand > span {
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64778d;
+}
+.bank-footer h2 {
+  font-size: 12px;
+  letter-spacing: 0;
+  margin: 4px 0 17px;
+  font-weight: 650;
+}
+.bank-footer nav {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 12px;
+}
+.bank-footer nav h2 {
+  margin-bottom: 4px;
+}
+.bank-footer a {
+  font-size: 11px;
+  text-decoration: none;
+  color: #64778d;
+}
+.bank-footer a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.bank-footer-help details {
+  border-bottom: 1px solid #dceafa;
+  padding: 0 0 11px;
+  margin-bottom: 12px;
+}
+.bank-footer-help summary {
+  font-size: 11px;
+  cursor: pointer;
+  line-height: 1.6;
+}
+.bank-footer-help p {
+  font-size: 11px;
+  margin: 10px 0 0;
+  color: #64778d;
+  line-height: 1.8;
+}
+.bank-footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid #dceafa;
+  font-size: 9px;
+  color: #64778d;
+}
+.bank-footer-bottom > span,
+.bank-footer-bottom button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.bank-footer-bottom button {
+  background: none;
+  border: 0;
+  color: #176e75;
+  font-size: 10px;
+  padding: 7px;
+  cursor: pointer;
+}
+.bank-home > .bank-footer {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 6%;
+}
+.bank-footer-compact {
+  width: 100%;
+  max-width: 450px;
+  margin: 40px auto 0;
+}
+.bank-footer-compact .bank-footer-top {
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.bank-footer-compact .bank-footer-brand {
+  display: none;
+}
+.bank-footer-compact .bank-footer-bottom > span:nth-child(2) {
+  display: none;
+}
+.credit-card {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 20px;
+  margin: 30px 0;
+  padding: 30px;
+  border-radius: 22px;
+  color: #e8f5f3;
+  background:
+    radial-gradient(ellipse at 85% 15%, #176e7544, transparent 65%), #244e78;
+  position: relative;
+  overflow: hidden;
+}
+.credit-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #80cabe;
+  font-size: 9px;
+  letter-spacing: 1.6px;
+}
+.credit-card h2 {
+  font-size: 30px;
+  font-weight: 450;
+  letter-spacing: -1px;
+  line-height: 1.25;
+  margin: 19px 0 12px;
+}
+.credit-card h2 em {
+  font-family: Georgia, serif;
+  color: #80cabe;
+  font-weight: 400;
+}
+.credit-card-content > p {
+  font-size: 12px;
+  color: #a8bbcc;
+  max-width: 310px;
+  line-height: 1.8;
+}
+.credit-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+.credit-card-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #e8f5f3;
+}
+.credit-privacy {
+  padding: 10px 14px;
+  border: 1px solid #64778d66;
+  background: #ffffff0a;
+  border-radius: 9px;
+}
+.credit-privacy:hover {
+  background: #ffffff16;
+  border-color: #80cabe;
+}
+.credit-profile {
+  border: 0;
+  background: none;
+  padding: 10px 0;
+}
+.credit-score-display {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+.credit-score-orbit {
+  width: 205px;
+  height: 205px;
+  border-radius: 50%;
+  border: 1px dashed #80cabe88;
+  display: grid;
+  place-items: center;
+  position: relative;
+  box-shadow: 0 0 0 12px #cef0e905;
+}
+.credit-score-orbit:before {
+  content: "";
+  position: absolute;
+  top: 26px;
+  right: 21px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #80cabe;
+  box-shadow: 0 0 0 5px #80cabe18;
+}
+.credit-score-inner {
+  width: 175px;
+  height: 175px;
+  border: 1px solid #16807944;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: radial-gradient(circle, #315d8355, transparent);
+  padding: 10px;
+  text-align: center;
+}
+.credit-score-inner > span:first-child {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: #80cabe;
+}
+.credit-score-inner > strong {
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 450;
+  letter-spacing: -2px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.credit-score-inner > span:last-child {
+  font-size: 10px;
+  color: #80cabe;
+}
+.credit-card-note {
+  grid-column: 1/-1;
+  border-top: 1px solid #80cabe22;
+  padding-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 10px;
+  line-height: 1.8;
+  color: #a8bbcc;
+}
+.credit-card-note button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border: 1px solid #80cabe66;
+  border-radius: 7px;
+  background: transparent;
+  color: #cef0e9;
+  font-size: 11px;
+  white-space: nowrap;
+}
+@media (max-width: 800px) {
+  .bank-footer-top {
+    gap: 20px;
+  }
+  .credit-card {
+    padding: 25px;
+    grid-template-columns: 1fr 0.85fr;
+  }
+  .credit-card h2 {
+    font-size: 26px;
+  }
+  .credit-score-orbit {
+    width: 180px;
+    height: 180px;
+  }
+  .credit-score-inner {
+    width: 155px;
+    height: 155px;
+  }
+}
+@media (max-width: 580px) {
+  .session-exit-copy small,
+  .session-exit-arrow {
+    display: none;
+  }
+  .session-exit {
+    min-height: 42px;
+    padding: 5px 10px 5px 5px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .session-exit-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+  .session-exit-copy strong {
+    font-size: 11px;
+  }
+  .bank-footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+  }
+  .bank-footer-brand {
+    grid-column: 1/-1;
+  }
+  .bank-footer-bottom > span:nth-child(2) {
+    display: none;
+  }
+  .credit-card {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .credit-score-display {
+    padding: 20px 0;
+  }
+  .credit-card h2 {
+    font-size: 29px;
+  }
+  .credit-card-note {
+    margin-top: 8px;
+  }
+  .credit-score-orbit {
+    width: 205px;
+    height: 205px;
+  }
+  .credit-score-inner {
+    width: 175px;
+    height: 175px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .session-exit,
+  .session-exit-icon,
+  .session-exit-arrow {
+    transition: none;
+  }
+  .session-exit:hover:not(:disabled),
+  .session-exit:hover:not(:disabled) .session-exit-arrow {
+    transform: none;
+  }
+}

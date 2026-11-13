@@ -9,6 +9,7 @@ import com.example.bankingapp.User.UserService;
 import com.example.bankingapp.User.UserRepository;
 import com.example.bankingapp.Staff.*;
 import com.example.bankingapp.Auth.AuthController;
+import com.example.bankingapp.Auth.AuthOptionsController;
 import com.example.bankingapp.Auth.SignupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,8 @@ class SecurityConfigTest {
     @EnableWebSecurity
     @EnableWebMvc
     @Import({SecurityConfig.class, CsrfController.class, UserController.class, AccountController.class,
-            StaffController.class, StaffService.class, LoginNamePolicy.class, MainExceptionHandler.class, AuthController.class})
+            StaffController.class, StaffService.class, LoginNamePolicy.class, MainExceptionHandler.class, AuthController.class,
+            AuthOptionsController.class})
     static class TestConfig {
         @Bean UserService userService() { return mock(UserService.class); }
         @Bean AccountService accountService() { return mock(AccountService.class); }
@@ -89,6 +91,7 @@ class SecurityConfigTest {
 
     @BeforeEach
     void setUp() {
+        userService = org.springframework.test.util.AopTestUtils.getUltimateTargetObject(context.getBean(UserService.class));
         accountService = org.springframework.test.util.AopTestUtils.getUltimateTargetObject(context.getBean(AccountService.class));
         mvc = MockMvcBuilders.webAppContextSetup(context).addFilters(securityFilter).build();
         reset(userRepository);
@@ -144,9 +147,10 @@ class SecurityConfigTest {
     @ParameterizedTest
     @CsvSource({"GET,/users", "GET,/users/1", "POST,/users", "PUT,/users/1",
             "GET,/accounts/user-1", "GET,/accounts/user-2", "POST,/accounts", "PUT,/accounts"})
-    void adminCanUseEveryCommand(String method, String path) throws Exception {
+    void adminCannotUseCustomerOrAccountCommands(String method, String path) throws Exception {
         mvc.perform(withToken(command(method, path)).header("Authorization", basic("admin", "admin-password")))
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(userService, accountService);
     }
 
     @Test
@@ -220,7 +224,7 @@ class SecurityConfigTest {
         assertNotEquals("new-staff-password", saved.getPassword());
         assertTrue(passwordEncoder.matches("new-staff-password", saved.getPassword()));
         mvc.perform(get("/users").header("Authorization", basic("new.staff", "new-staff-password")))
-                .andExpect(status().isOk());
+                .andExpect(role.equals("ADMIN") ? status().isForbidden() : status().isOk());
         mvc.perform(withToken(staffRequest("another.staff", "ADMIN"))
                         .header("Authorization", basic("new.staff", "new-staff-password")))
                 .andExpect(role.equals("ADMIN") ? status().isCreated() : status().isForbidden());
@@ -478,6 +482,13 @@ class SecurityConfigTest {
     }
 
     @Test
+    void anonymousFrontendCanDiscoverThatGoogleIsDisabled() throws Exception {
+        mvc.perform(get("/auth/options")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.googleSignInEnabled").value(false))
+                .andExpect(jsonPath("$.clientSecret").doesNotExist());
+    }
+
+    @Test
     void frontendLoginReturnsNoRedirectAndExposesTheRole() throws Exception {
         var request = withToken(post("/login").accept("application/json")
                 .param("username", "customer").param("password", "test-password"));
@@ -494,6 +505,32 @@ class SecurityConfigTest {
         String value = token.getToken();
         return request.session((MockHttpSession) result.getRequest().getSession(false))
                 .header(token.getHeaderName(), value);
+    }
+
+    @Test
+    void adminBrowserLoginLandsOnStaffInsteadOfCustomers() throws Exception {
+        mvc.perform(withToken(post("/login").param("username", "admin").param("password", "admin-password")))
+                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/staff"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"admin,admin-password", "representative,test-password"})
+    void staffCannotUsePublicSignupOrGoogleToBecomeACustomer(String username, String password) throws Exception {
+        mvc.perform(withToken(post("/auth/signup").contentType("application/json").content(USER_JSON))
+                        .header("Authorization", basic(username, password)))
+                .andExpect(status().isForbidden());
+        for (String path : List.of("/oauth2/authorization/google", "/login/oauth2/code/google", "/signup/google")) {
+            mvc.perform(get(path).header("Authorization", basic(username, password)))
+                    .andExpect(status().isForbidden());
+        }
+        verifyNoInteractions(userService, accountService);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"admin,admin-password,200", "representative,test-password,403", "customer,test-password,403"})
+    void onlyAdminsCanListStaff(String username, String password, int expectedStatus) throws Exception {
+        mvc.perform(get("/staff").header("Authorization", basic(username, password)))
+                .andExpect(status().is(expectedStatus));
     }
 
     private static String basic(String username, String password) {

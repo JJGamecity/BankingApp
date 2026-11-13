@@ -5,11 +5,11 @@ import {
   Users,
   Plus,
   UserPlus,
-  LogOut,
-  ArrowUpRight,
-  Sprout,
 } from "lucide-react";
 import { Brand } from "./UI.jsx";
+import SignOutButton from "./SignOutButton.jsx";
+import SiteFooter from "./SiteFooter.jsx";
+import CommandCenter from "./CommandCenter.jsx";
 import { paths, followLink } from "../lib/navigation.js";
 
 export default function Layout({
@@ -17,6 +17,8 @@ export default function Layout({
   page,
   onNavigate,
   onLogout,
+  onAccountSelect,
+  onExpired,
   busy,
   children,
 }) {
@@ -37,17 +39,16 @@ export default function Layout({
 
   return (
     <div className="app-layout">
-      <aside className="sidebar">
+      <header className="portal-header">
         <Brand />
-        <p className="nav-label">YOUR WORKSPACE</p>
-        <nav aria-label="Main navigation">
+        <nav className="portal-tabs" aria-label="Main navigation">
           {navigation.map(([key, Icon, label]) => (
             <a
               href={
                 key === "overview" && !customer ? paths.customers : paths[key]
               }
               key={key}
-              className={`nav-item ${page === key ? "active" : ""}`}
+              className={`portal-tab ${page === key ? "active" : ""}`}
               aria-current={page === key ? "page" : undefined}
               onClick={(event) =>
                 followLink(
@@ -60,32 +61,17 @@ export default function Layout({
             >
               <Icon size={19} />
               {label}
-              {page === key && <span className="nav-dot" />}
             </a>
           ))}
         </nav>
-        <div className="sidebar-promo">
-          <Sprout size={28} />
-          <h3>
-            Good things
-            <br />
-            grow from here.
-          </h3>
-          <p>
-            A little attention today.
-            <br />
-            More possibility tomorrow.
-          </p>
-          <ArrowUpRight size={22} />
-        </div>
-        <div className="sidebar-profile">
+        <div className="portal-profile">
           <span className="avatar">{session.username?.[0]?.toUpperCase()}</span>
           <div>
             <strong>{session.username}</strong>
             <span>{customer ? "Personal banking" : "Staff workspace"}</span>
           </div>
         </div>
-      </aside>
+      </header>
       <div className="main-column">
         <header className="topbar">
           <div>
@@ -93,19 +79,19 @@ export default function Layout({
             <span className="breadcrumb-divider">/</span>
             <strong>{navigation.find(([key]) => key === page)?.[2]}</strong>
           </div>
-          <button className="signout" disabled={busy} onClick={onLogout}>
-            <LogOut size={17} />
-            {busy ? "Signing out…" : "Sign out"}
-          </button>
+          <div className="topbar-actions">
+            <CommandCenter
+              session={session}
+              onNavigate={onNavigate}
+              onAccountSelect={onAccountSelect}
+              onExpired={onExpired}
+            />
+            <SignOutButton busy={busy} onLogout={onLogout} />
+          </div>
         </header>
         <main className="workspace">
           {children}
-          <footer className="workspace-footer">
-            <span>
-              banking. <span className="muted">A little more possibility.</span>
-            </span>
-            <span>Made for your everyday ↗</span>
-          </footer>
+          <SiteFooter session={session} />
         </main>
       </div>
     </div>

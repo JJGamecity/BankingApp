@@ -2,7 +2,7 @@ package com.example.bankingapp.User.DTOs;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
-import com.example.bankingapp.validation.ValidPassword;
+import com.example.bankingapp.Validation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;

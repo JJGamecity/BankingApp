@@ -21,7 +21,10 @@ import java.time.Clock;
 import org.springframework.beans.factory.ObjectProvider;
 import com.example.bankingapp.Google.GoogleOAuthConfiguration;
 import com.example.bankingapp.Auth.SecurityResponses;
+import com.example.bankingapp.Auth.StaffOAuthGuard;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.csrf.CsrfException;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
@@ -58,28 +61,35 @@ public class SecurityConfig {
         return http
                 .cors(config -> config.configurationSource(corsSource))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/oauth2/authorization/google", "/login/oauth2/code/google").permitAll()
-                        .requestMatchers("/signup/google").hasRole("GOOGLE_PENDING")
+                        .requestMatchers("/oauth2/authorization/google", "/login/oauth2/code/google")
+                        .access(new WebExpressionAuthorizationManager("!hasAnyRole('ADMIN', 'BANK_REPRESENTATIVE')"))
+                        .requestMatchers("/signup/google")
+                        .access(new WebExpressionAuthorizationManager("hasRole('GOOGLE_PENDING') and !hasAnyRole('ADMIN', 'BANK_REPRESENTATIVE')"))
                         .requestMatchers("/staff", "/staff/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.GET, "/csrf").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/signup").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth/options").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/signup")
+                        .access(new WebExpressionAuthorizationManager("!hasAnyRole('ADMIN', 'BANK_REPRESENTATIVE')"))
                         .requestMatchers(HttpMethod.GET, "/auth/me").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/users/me", "/accounts/me", "/accounts/me/{accountId}").hasRole(CUSTOMER)
+                        .requestMatchers(HttpMethod.GET, "/users/me", "/accounts/me", "/accounts/me/{accountId}")
+                        .access(new WebExpressionAuthorizationManager("hasRole('CUSTOMER') and !hasAnyRole('ADMIN', 'BANK_REPRESENTATIVE')"))
                         .requestMatchers(HttpMethod.GET, "/accounts/user-{id}")
                         .access((authentication, context) -> {
                             var auth = authentication.get();
-                            boolean staff = auth.getAuthorities().stream().anyMatch(authority ->
-                                    authority.getAuthority().equals("ROLE_" + ADMIN)
-                                            || authority.getAuthority().equals("ROLE_" + BANK_REPRESENTATIVE));
+                            boolean admin = auth.getAuthorities().stream().anyMatch(authority ->
+                                    authority.getAuthority().equals("ROLE_" + ADMIN));
+                            boolean representative = auth.getAuthorities().stream().anyMatch(authority ->
+                                    authority.getAuthority().equals("ROLE_" + BANK_REPRESENTATIVE));
                             boolean owner = auth.getPrincipal() instanceof CustomerPrincipal customer
                                     && customer.getUserId().toString().equals(context.getVariables().get("id"));
-                            return new AuthorizationDecision(auth.isAuthenticated() && (staff || owner));
+                            return new AuthorizationDecision(auth.isAuthenticated() && !admin && (representative || owner));
                         })
                         .requestMatchers("/users", "/users/**", "/accounts", "/accounts/**")
-                        .hasAnyRole(BANK_REPRESENTATIVE, ADMIN)
+                        .access(new WebExpressionAuthorizationManager("hasRole('BANK_REPRESENTATIVE') and !hasRole('ADMIN')"))
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").hasRole(ADMIN)
                         .anyRequest().denyAll())
                 .addFilterBefore(new LoginRateLimitFilter(loginLimit, Clock.systemUTC()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new StaffOAuthGuard(), OAuth2AuthorizationRequestRedirectFilter.class)
                 .sessionManagement(session -> session.sessionFixation(fixation -> fixation.changeSessionId()))
                 .requestCache(cache -> cache.disable())
                 .exceptionHandling(errors -> errors
@@ -97,7 +107,9 @@ public class SecurityConfig {
                         response.setStatus(204);
                         return;
                     }
-                    String destination = authentication.getPrincipal() instanceof CustomerPrincipal customer
+                    boolean admin = authentication.getAuthorities().stream()
+                            .anyMatch(authority -> authority.getAuthority().equals("ROLE_" + ADMIN));
+                    String destination = admin ? "/staff" : authentication.getPrincipal() instanceof CustomerPrincipal
                             ? "/accounts/me" : "/users";
                     response.sendRedirect(request.getContextPath() + destination);
                 }).failureHandler((request, response, ex) -> {

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@PreAuthorize("!hasRole('ADMIN')")
 public class AccountService {
 
     private final AccountMapper accountMapper;
@@ -45,7 +46,7 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('CUSTOMER') and #userId == principal.userId")
+    @PreAuthorize("!hasAnyRole('ADMIN', 'BANK_REPRESENTATIVE') and hasRole('CUSTOMER') and #userId == principal.userId")
     public AccountResponse getCustomerAccount(Long accountId, Long userId) {
         Account account = accountRepository.findByIdAndUserId(accountId, userId)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
-import com.example.bankingapp.validation.MinimumAge;
+import com.example.bankingapp.Validation.MinimumAge;
 import java.time.LocalDate;
 
 public record GoogleSignupRequest(

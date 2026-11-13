@@ -43,7 +43,7 @@ Requests use session cookies and server-provided CSRF tokens. Login/logout reset
 
 Customer screens load real accounts and profile data. Staff can search customers, view accounts, and open accounts. Administrators can create staff. Server authorization remains authoritative.
 
-Google login must be configured in the backend. After finishing its redirect flow, return here and select Check my session. Pending signup links to the backend profile-completion page.
+Google login must be configured in the backend. The frontend checks GET /auth/options and disables its Google button with an explanation when the backend has not enabled Google sign-in. Configure BANK_SECURITY_GOOGLE_ENABLED, BANK_SECURITY_GOOGLE_CLIENT_ID, and BANK_SECURITY_GOOGLE_CLIENT_SECRET in the backend's project-root .env, restart the backend, and refresh the frontend. Never put client secrets in frontend configuration. After finishing its redirect flow, return here and select Check my session. Pending signup links to the backend profile-completion page.
 
 No fake balances or transactions are used. The welcome-page card is decorative, not an issued card. Deposits, transfers, and withdrawals are not implemented by the backend.
 

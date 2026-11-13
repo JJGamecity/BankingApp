@@ -1,10 +1,10 @@
 /* Static HTML welcome screen: also works when index.html is opened directly. */
 body {
   margin: 0;
-  background: #f8f9f3;
+  background: #edf6ff;
 }
 .welcome-page {
-  color: #203e32;
+  color: #28527a;
   font-family: "Segoe UI", Arial, sans-serif;
 }
 .welcome-page * {
@@ -15,7 +15,7 @@ body {
   text-decoration: none;
 }
 .welcome-page a:focus-visible {
-  outline: 3px solid #85a557;
+  outline: 3px solid #168079;
   outline-offset: 6px;
 }
 .welcome-header,
@@ -57,11 +57,11 @@ body {
   transform: translateY(-2px);
 }
 .welcome-outline {
-  border: 1px solid #cdd8c4;
+  border: 1px solid #dceafa;
 }
 .welcome-page .welcome-dark {
-  color: #f5f8ec;
-  background: #1b4135;
+  color: #e8f5f3;
+  background: #28527a;
 }
 .welcome-hero {
   max-width: 1440px;
@@ -79,7 +79,7 @@ body {
   font-size: 9px;
   letter-spacing: 2px;
   font-weight: 600;
-  color: #80906e;
+  color: #64778d;
 }
 .welcome-copy h1 {
   font-size: clamp(42px, 4.8vw, 73px);
@@ -91,10 +91,10 @@ body {
 .welcome-copy em {
   font-family: Georgia, serif;
   font-weight: 400;
-  color: #718c50;
+  color: #168079;
 }
 .welcome-copy > p {
-  color: #83917b;
+  color: #64778d;
   max-width: 360px;
   font-size: 13px;
   line-height: 1.9;
@@ -111,18 +111,18 @@ body {
 .welcome-caption {
   margin-top: 32px;
   font-size: 10px;
-  color: #8c987f;
+  color: #64778d;
 }
 .welcome-caption span {
   margin-right: 7px;
-  color: #71934d;
+  color: #168079;
 }
 .welcome-art {
   position: relative;
   overflow: hidden;
   min-height: 520px;
   border-radius: 100px 18px 18px 18px;
-  background: #234a3c;
+  background: #28527a;
 }
 .welcome-art-label {
   position: absolute;
@@ -130,13 +130,13 @@ body {
   right: 26px;
   font-size: 8px;
   letter-spacing: 1.5px;
-  color: #b6c7a2;
+  color: #80cabe;
 }
 .welcome-ring {
   position: absolute;
   width: 410px;
   height: 410px;
-  border: 1px solid #a0bf7b33;
+  border: 1px solid #16807933;
   border-radius: 50%;
   top: 65px;
   left: 30px;
@@ -158,16 +158,16 @@ body {
   padding: 25px;
   border-radius: 17px;
   transform: rotate(-12deg);
-  background: linear-gradient(120deg, #e3edbc, #adc58b);
+  background: linear-gradient(120deg, #cef0e9, #80cabe);
   box-shadow: 15px 28px 35px #071f3140;
-  color: #254637;
+  color: #28527a;
 }
 .welcome-card-back {
   top: 140px;
   left: 20%;
   transform: rotate(9deg);
-  background: #769362;
-  color: #e0ebcf;
+  background: #64778d;
+  color: #cef0e9;
   z-index: 1;
   font-size: 8px;
   letter-spacing: 1.3px;
@@ -185,13 +185,13 @@ body {
 .welcome-chip {
   width: 34px;
   height: 27px;
-  border: 1px solid #94a86b;
+  border: 1px solid #168079;
   border-radius: 6px;
   margin: 25px 0 20px;
   background: linear-gradient(
     90deg,
     transparent 45%,
-    #94a86b 47%,
+    #168079 47%,
     transparent 50%
   );
 }
@@ -212,16 +212,16 @@ body {
   display: flex;
   align-items: center;
   gap: 13px;
-  background: #f7f8ed;
+  background: #e8f5f3;
   border-radius: 12px;
   padding: 16px 18px;
-  box-shadow: 0 10px 30px #11261d33;
+  box-shadow: 0 10px 30px #0c203833;
   font-size: 10px;
   transform: rotate(4deg);
 }
 .welcome-floating > span {
   font-size: 25px;
-  color: #8ba66b;
+  color: #168079;
 }
 .welcome-floating strong {
   display: block;
@@ -237,11 +237,11 @@ body {
   justify-content: space-between;
   font-size: 8px;
   letter-spacing: 1px;
-  color: #b2c5a0;
+  color: #80cabe;
 }
 .welcome-values {
   padding: 35px 6%;
-  background: #edf1e5;
+  background: #e3effc;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 50px;
@@ -253,7 +253,7 @@ body {
 .welcome-values div > span {
   display: block;
   font-size: 9px;
-  color: #8da374;
+  color: #64778d;
   margin-bottom: 14px;
 }
 .welcome-values strong {
@@ -262,7 +262,7 @@ body {
 }
 .welcome-values p {
   font-size: 11px;
-  color: #8b977f;
+  color: #64778d;
   line-height: 1.8;
   margin-bottom: 0;
 }
@@ -287,7 +287,7 @@ body {
 }
 .welcome-section-heading > p {
   font-size: 11px;
-  color: #8c987f;
+  color: #64778d;
   line-height: 1.8;
 }
 .welcome-account-grid {
@@ -297,7 +297,7 @@ body {
 }
 .welcome-account-grid article {
   background: #fff;
-  border: 1px solid #e2e8da;
+  border: 1px solid #dceafa;
   border-radius: 15px;
   padding: 28px;
 }
@@ -306,14 +306,14 @@ body {
   place-items: center;
   width: 43px;
   height: 43px;
-  background: #edf2e3;
+  background: #edf4fc;
   border-radius: 12px;
-  color: #829e5c;
+  color: #168079;
   font-size: 25px;
 }
 .welcome-account-grid article:nth-child(2) .welcome-account-icon {
-  background: #f5eedb;
-  color: #b49b63;
+  background: #e5eef9;
+  color: #426e9d;
 }
 .welcome-account-grid article:nth-child(3) .welcome-account-icon {
   background: #eaf0f2;
@@ -325,24 +325,24 @@ body {
   margin: 22px 0 12px;
 }
 .welcome-account-grid p {
-  color: #8a967e;
+  color: #64778d;
   font-size: 12px;
   line-height: 1.8;
   margin-bottom: 28px;
 }
 .welcome-account-tag {
   display: block;
-  border-top: 1px solid #e8eddf;
+  border-top: 1px solid #edf4fc;
   padding-top: 20px;
   font-size: 8px;
   letter-spacing: 1.4px;
-  color: #8f9e7b;
+  color: #64778d;
 }
 .welcome-start {
   margin: 0 6% 35px;
   padding: 40px;
   border-radius: 18px;
-  background: #e5edcf;
+  background: #dcecff;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -350,13 +350,13 @@ body {
 }
 .welcome-setup {
   margin: 25px 6%;
-  border: 1px solid #dfe5d6;
+  border: 1px solid #dceafa;
   border-radius: 12px;
   padding: 20px;
   font:
     12px/1.8 "Segoe UI",
     sans-serif;
-  color: #6f8061;
+  color: #64778d;
 }
 .welcome-setup p {
   margin-bottom: 0;
@@ -365,12 +365,12 @@ body {
   text-decoration: underline;
 }
 .welcome-footer {
-  border-top: 1px solid #e3e8db;
-  color: #91a080;
+  border-top: 1px solid #dceafa;
+  color: #64778d;
   font-size: 10px;
 }
 .welcome-footer .welcome-brand {
-  color: #35523d;
+  color: #315d83;
   font-size: 23px;
 }
 @media (max-width: 850px) {
@@ -464,7 +464,7 @@ body {
   height: 300px;
   border-radius: 18px;
   overflow: hidden;
-  background: #254a3a;
+  background: #28527a;
 }
 .welcome-photo-strip img {
   width: 100%;
@@ -481,7 +481,7 @@ body {
   padding: 55px 25px 25px;
   color: white;
   font-size: 17px;
-  background: linear-gradient(transparent, #10291fe8);
+  background: linear-gradient(transparent, #0c2038e8);
 }
 @media (max-width: 650px) {
   .welcome-photo-strip {

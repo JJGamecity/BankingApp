@@ -7,6 +7,7 @@ import com.example.bankingapp.User.UserRepository;
 import com.example.bankingapp.User.DTOs.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +29,7 @@ public class SignupService {
     }
 
     @Transactional
+    @PreAuthorize("!hasAnyRole('ADMIN', 'BANK_REPRESENTATIVE')")
     public UserResponse create(@Valid SignupRequest request) {
         names.requireAvailable(request.username(), null);
         String email = request.email().toLowerCase(Locale.ROOT);

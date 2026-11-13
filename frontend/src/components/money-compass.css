@@ -1,10 +1,10 @@
 .money-compass {
   margin: 30px 0;
-  border: 1px solid #dfe5d6;
+  border: 1px solid #dceafa;
   border-radius: 22px;
   padding: 30px;
-  background: linear-gradient(125deg, #fff, #f7f8f0);
-  box-shadow: 0 12px 35px #203e3205;
+  background: linear-gradient(125deg, #fff, #edf4fc);
+  box-shadow: 0 12px 35px #28527a05;
 }
 .compass-heading {
   display: flex;
@@ -16,14 +16,14 @@
   place-items: center;
   width: 49px;
   height: 49px;
-  background: #eaf0de;
+  background: #edf4fc;
   border-radius: 15px;
-  color: #496641;
+  color: #176e75;
 }
 .compass-heading .eyebrow {
   margin: 0 0 5px;
   font-size: 8px;
-  color: #7b8c68;
+  color: #64778d;
 }
 .compass-heading h2 {
   margin: 0;
@@ -33,14 +33,14 @@
   margin-left: auto;
   font-size: 8px;
   letter-spacing: 1.5px;
-  color: #738460;
+  color: #64778d;
   padding: 8px 12px;
-  border: 1px solid #dce5ce;
+  border: 1px solid #dceafa;
   border-radius: 20px;
 }
 .compass-intro {
   font-size: 13px;
-  color: #72806a;
+  color: #64778d;
   margin: 18px 0 25px;
 }
 .compass-layout {
@@ -62,14 +62,14 @@
   border-radius: 50%;
   padding: 23px;
   box-shadow:
-    0 0 0 10px #eff2e7,
-    0 0 0 11px #e3e8d9;
+    0 0 0 10px #edf4fc,
+    0 0 0 11px #dceafa;
   transform: rotate(-20deg);
 }
 .compass-center {
   height: 100%;
   border-radius: 50%;
-  background: #fcfdf7;
+  background: #f8fafc;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -87,11 +87,11 @@
 }
 .compass-center > span {
   font-size: 10px;
-  color: #78896d;
+  color: #64778d;
 }
 .compass-visual-caption {
   font-size: 10px;
-  color: #78896d;
+  color: #64778d;
   margin-top: 5px;
 }
 .compass-list-heading {
@@ -102,12 +102,12 @@
   margin-bottom: 10px;
   font-size: 9px;
   letter-spacing: 1px;
-  color: #7c896e;
+  color: #64778d;
 }
 .compass-list-heading button {
   border: 0;
   background: none;
-  color: #496641;
+  color: #176e75;
   font-size: 11px;
   padding: 8px;
   letter-spacing: 0;
@@ -121,21 +121,21 @@
   gap: 12px;
   width: 100%;
   background: white;
-  border: 1px solid #e2e7d9;
+  border: 1px solid #dceafa;
   padding: 15px;
   border-radius: 11px;
   text-align: left;
-  color: #294532;
+  color: #28527a;
   margin-bottom: 9px;
 }
 .compass-account:hover {
-  border-color: #a8bc90;
+  border-color: #80cabe;
   transform: translateX(3px);
 }
 .compass-account[aria-pressed="true"] {
-  background: #eaf0df;
-  border-color: #8ba572;
-  box-shadow: 0 0 0 1px #8ba572;
+  background: #edf4fc;
+  border-color: #168079;
+  box-shadow: 0 0 0 1px #168079;
 }
 .compass-swatch {
   width: 10px;
@@ -156,7 +156,7 @@
 }
 .compass-account small {
   font-size: 10px;
-  color: #718164;
+  color: #64778d;
 }
 .compass-account-value {
   margin-left: auto;
@@ -168,24 +168,24 @@
 }
 .compass-selection p {
   font-size: 11px;
-  color: #718164;
+  color: #64778d;
   margin-bottom: 8px;
 }
 .compass-selection .text-button {
   font-size: 12px;
 }
 .compass-footnote {
-  border-top: 1px solid #e2e7d9;
+  border-top: 1px solid #dceafa;
   margin-top: 24px;
   padding-top: 16px;
   font-size: 10px;
-  color: #78876b;
+  color: #64778d;
   line-height: 1.8;
 }
 .compass-empty {
   text-align: center;
   padding: 30px;
-  color: #728464;
+  color: #64778d;
 }
 .compass-empty h3 {
   margin: 15px 0 8px;
@@ -203,16 +203,16 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #d9e2cc;
+  border: 1px solid #dceafa;
   border-radius: 20px;
   padding: 9px 15px;
-  background: #f2f5e9;
-  color: #48613d;
+  background: #edf4fc;
+  color: #315d83;
   font-size: 11px;
 }
 .balance-privacy-toolbar button[aria-pressed="true"] {
-  background: #254839;
-  color: #f3f6e9;
+  background: #2c5c88;
+  color: #e8f5f3;
 }
 @media (max-width: 900px) {
   .compass-layout {

@@ -27,9 +27,22 @@ and bank accounts. Spring Security provides the public login page.
 
 | Role | Access |
 | --- | --- |
-| BANK_REPRESENTATIVE | User and account commands; cannot create staff |
-| ADMIN | All application commands, including creating staff |
+| BANK_REPRESENTATIVE | Manage customers and their accounts; no personal customer account/signup or staff management |
+| ADMIN | Create and list staff; administrative documentation only; no customer/bank-account access |
 | CUSTOMER | Own profile at `/users/me`; own accounts at `/accounts/me`, `/accounts/me/{accountId}`, or `/accounts/user-{id}` |
+
+ADMIN is restricted to staff management and administrative documentation. It cannot
+read/create/update customers or bank accounts, use customer signup, or own a bank
+account under its staff identity. Customer/account services reject ADMIN as well
+as the URL rules. Accounts reference `users`, while admins live in `staff_accounts`
+or bootstrap configuration. `GET /staff` lists database-backed staff IDs, usernames,
+and roles without credentials; configured bootstrap users are not database rows.
+Admins land there after browser login and retain session/CSRF/logout support.
+Representatives also cannot own personal accounts under their staff identity or
+use customer signup/personal profile endpoints. They retain customer/account management
+commands. Signup services reject both staff roles. Google authorization and callback
+requests reject both admin and representative sessions before OAuth's
+filters run. These browser OAuth endpoints also reject Authorization headers.
 
 Anyone can retrieve `/csrf` to establish a session and bootstrap login/signup CSRF protection. Customers
 cannot list users, view another customer's accounts, or create/update users or
@@ -38,7 +51,7 @@ before the account controller runs. Roles cannot be supplied in a customer reque
 
 `GET /accounts/me` derives the owner from the authenticated customer principal,
 without accepting an owner ID. It returns account numbers, routing numbers, types,
-and available balances using the existing account response DTO. Staff identities
+and available balances using the existing account response DTO. Bank representatives
 use the ID-based endpoint instead. The customer endpoint also checks its role at
 the controller method and retains Spring Security's no-store response headers.
 
@@ -86,7 +99,7 @@ As an ADMIN, send `POST http://localhost:5050/staff`:
 ```
 
 Use `"role": "ADMIN"` to create another administrator. `CUSTOMER` is not an
-accepted staff role; create customers through `POST /users`. Usernames must have
+accepted staff role; bank representatives create customers through `POST /users`. Usernames must have
 3–50 letters, digits, dots, underscores, or hyphens. Passwords must have at least
 10 characters, include a special character (punctuation or a symbol, not just
 whitespace), and contain no ascending/descending sequence of three or more digits
