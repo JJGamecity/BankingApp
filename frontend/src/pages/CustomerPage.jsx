@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import EditorialGallery from "../components/EditorialGallery.jsx";
+import MoneyCompass from "../components/MoneyCompass.jsx";
 import {
   ArrowLeft,
   ArrowRight,
@@ -7,6 +8,8 @@ import {
   Wallet,
   Sprout,
   ShieldCheck,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { request, money, accountName } from "../lib/api.js";
 import {
@@ -23,6 +26,20 @@ export default function CustomerPage({ session, page, onNavigate, onExpired }) {
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [hideBalances, setHideBalances] = useState(false);
+  const formatBalance = (value) => (hideBalances ? "••••••" : money(value));
+  const privacyControl = (
+    <div className="balance-privacy-toolbar">
+      <button
+        type="button"
+        aria-pressed={hideBalances}
+        onClick={() => setHideBalances(!hideBalances)}
+      >
+        {hideBalances ? <Eye size={16} /> : <EyeOff size={16} />}
+        {hideBalances ? "Show balances" : "Hide balances"}
+      </button>
+    </div>
+  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -99,7 +116,8 @@ export default function CustomerPage({ session, page, onNavigate, onExpired }) {
           <section className="balance-card">
             <Wallet size={26} />
             <p className="eyebrow">AVAILABLE BALANCE</p>
-            <h2>{money(selected.availableBalance)}</h2>
+            {privacyControl}
+            <h2>{formatBalance(selected.availableBalance)}</h2>
             <span>
               Account ending {String(selected.accountNumber).slice(-4)}
             </span>
@@ -130,6 +148,7 @@ export default function CustomerPage({ session, page, onNavigate, onExpired }) {
           ? "A fresh perspective on your financial world."
           : "Everything you need, right where you need it."}
       </PageHeading>
+      {privacyControl}
       {page === "overview" && (
         <div className="overview-grid">
           <section className="balance-card">
@@ -137,7 +156,7 @@ export default function CustomerPage({ session, page, onNavigate, onExpired }) {
               <span className="eyebrow">YOUR TOTAL BALANCE</span>
               <Wallet size={23} />
             </div>
-            <h2>{money(total)}</h2>
+            <h2>{formatBalance(total)}</h2>
             <p>
               Available across {data.length}{" "}
               {data.length === 1 ? "account" : "accounts"}
@@ -172,6 +191,13 @@ export default function CustomerPage({ session, page, onNavigate, onExpired }) {
           </section>
         </div>
       )}
+      {page === "overview" && (
+        <MoneyCompass
+          accounts={data}
+          hidden={hideBalances}
+          onSelect={setSelected}
+        />
+      )}
       <div className="section-heading">
         <div>
           <h2>Made for your everyday</h2>
@@ -187,7 +213,7 @@ export default function CustomerPage({ session, page, onNavigate, onExpired }) {
             <AccountCard
               key={account.id}
               account={account}
-              formatMoney={money}
+              formatMoney={formatBalance}
               formatName={accountName}
               onClick={() => setSelected(account)}
             />
