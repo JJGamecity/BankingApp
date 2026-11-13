@@ -1,18 +1,20 @@
 package com.example.bankingapp.Account.Dtos;
 
 import com.example.bankingapp.Account.AccountType;
-import com.example.bankingapp.User.User;
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 public record AccountRequest(
 
-   @Column(nullable = false)
+   @NotNull @Positive
     Long userId,
    //Accept account number for now but later end up generating iti0000000000000
-   @Column(nullable = false)
+   @NotBlank @Size(max = 255)
     String accountNumber,
 
-   @Column(nullable = false)
+   @NotNull
    AccountType accountType
 
    ){

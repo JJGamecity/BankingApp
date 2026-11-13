@@ -37,15 +37,26 @@ public class User {
     private String password;
 
     @Getter
+    @Column(name = "google_subject", unique = true)
+    private String googleSubject;
+
+    public void linkGoogleSubject(String subject) {
+        if (googleSubject != null) throw new IllegalStateException("Google identity already assigned");
+        googleSubject = subject;
+    }
+
+    @Getter
     @Setter
     @Column(name = "username", unique = true)
     private String username;
 
     @Getter
+    @Setter
     @Column(name = "first_name")
     private String firstName;
 
     @Getter
+    @Setter
     @Column(name = "last_name")
     private String lastName;
 
@@ -55,6 +66,7 @@ public class User {
     private LocalDate dateOfBirth;
 
     @Getter
+    @Setter
     @Column(name = "credit_score")
     private Integer creditScore;
 
@@ -78,7 +90,7 @@ public class User {
     protected User() {
 
     }
-    public User(String email, String password, String username, String firstName, String lastName, LocalDate dateOfBirth, int creditScore) {
+    public User(String email, String password, String username, String firstName, String lastName, LocalDate dateOfBirth, Integer creditScore) {
         this.email = email;
         this.password = password;
         this.username = username;

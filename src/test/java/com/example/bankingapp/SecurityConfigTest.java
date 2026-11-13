@@ -8,6 +8,8 @@ import com.example.bankingapp.User.UserController;
 import com.example.bankingapp.User.UserService;
 import com.example.bankingapp.User.UserRepository;
 import com.example.bankingapp.Staff.*;
+import com.example.bankingapp.Auth.AuthController;
+import com.example.bankingapp.Auth.SignupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -59,12 +61,13 @@ class SecurityConfigTest {
     @EnableWebSecurity
     @EnableWebMvc
     @Import({SecurityConfig.class, CsrfController.class, UserController.class, AccountController.class,
-            StaffController.class, StaffService.class, LoginNamePolicy.class, MainExceptionHandler.class})
+            StaffController.class, StaffService.class, LoginNamePolicy.class, MainExceptionHandler.class, AuthController.class})
     static class TestConfig {
         @Bean UserService userService() { return mock(UserService.class); }
         @Bean AccountService accountService() { return mock(AccountService.class); }
         @Bean UserRepository userRepository() { return mock(UserRepository.class); }
         @Bean StaffRepository staffRepository() { return mock(StaffRepository.class); }
+        @Bean SignupService signupService() { return mock(SignupService.class); }
     }
 
     @Autowired WebApplicationContext context;
@@ -197,7 +200,7 @@ class SecurityConfigTest {
 
     private MockHttpServletRequestBuilder command(String method, String path) {
         String body = path.startsWith("/users") ? USER_JSON
-                : "{\"userId\":1,\"accountType\":\"CHECKING\"}";
+                : "{\"userId\":1,\"accountNumber\":\"1000000001\",\"accountType\":\"CHECKING\"}";
         return request(HttpMethod.valueOf(method), path).param("id", "1")
                 .contentType("application/json").accept("application/json").content(body);
     }
@@ -462,6 +465,27 @@ class SecurityConfigTest {
                         .header("Authorization", basic("representative", "test-password")))
                 .andExpect(status().isCreated());
         verify(userService).createUser(any());
+    }
+
+    @Test
+    void anonymousFrontendCanBootstrapCsrfAndGetsJsonAuthenticationErrors() throws Exception {
+        mvc.perform(get("/csrf")).andExpect(status().isOk()).andExpect(jsonPath("$.token").isNotEmpty());
+        mvc.perform(get("/auth/me")).andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorCode").value("AUTHENTICATION_REQUIRED"));
+        mvc.perform(withToken(post("/login").accept("application/json")
+                .param("username", "missing").param("password", "wrong")))
+                .andExpect(status().isUnauthorized()).andExpect(jsonPath("$.errorCode").value("INVALID_CREDENTIALS"));
+    }
+
+    @Test
+    void frontendLoginReturnsNoRedirectAndExposesTheRole() throws Exception {
+        var request = withToken(post("/login").accept("application/json")
+                .param("username", "customer").param("password", "test-password"));
+        var result = mvc.perform(request).andExpect(status().isNoContent())
+                .andExpect(header().doesNotExist("Location")).andReturn();
+        mvc.perform(get("/auth/me").session((MockHttpSession) result.getRequest().getSession(false)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.roles[0]").value("CUSTOMER"))
+                .andExpect(jsonPath("$.customerId").value(1));
     }
 
     private MockHttpServletRequestBuilder withToken(MockHttpServletRequestBuilder request) throws Exception {

@@ -3,7 +3,6 @@ package com.example.bankingapp;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +18,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import java.time.Clock;
+import org.springframework.beans.factory.ObjectProvider;
+import com.example.bankingapp.Google.GoogleOAuthConfiguration;
+import com.example.bankingapp.Auth.SecurityResponses;
+import org.springframework.security.web.csrf.CsrfException;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -30,11 +37,33 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http,
-            @Value("${bank.security.login-attempts-per-minute:30}") int loginLimit) throws Exception {
+            @Value("${bank.security.login-attempts-per-minute:30}") int loginLimit,
+            @Value("${bank.security.frontend-origins:http://localhost:5173,http://127.0.0.1:5173}") String frontendOrigins,
+            ObjectProvider<GoogleOAuthConfiguration> google) throws Exception {
+        var googleConfig = google.getIfAvailable();
+        if (googleConfig != null) googleConfig.configure(http);
+        var cors = new CorsConfiguration();
+        var origins = Arrays.stream(frontendOrigins.split(",")).map(String::strip)
+                .filter(origin -> !origin.isBlank()).toList();
+        if (origins.stream().anyMatch(origin -> origin.contains("*"))) {
+            throw new IllegalArgumentException("Frontend origins must be explicit origins, without wildcards");
+        }
+        cors.setAllowedOrigins(origins);
+        cors.setAllowCredentials(true);
+        cors.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        cors.setAllowedHeaders(List.of("Content-Type", "X-CSRF-TOKEN", "Authorization", "Accept"));
+        cors.setExposedHeaders(List.of("Retry-After", "Location"));
+        var corsSource = new UrlBasedCorsConfigurationSource();
+        corsSource.registerCorsConfiguration("/**", cors);
         return http
+                .cors(config -> config.configurationSource(corsSource))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/oauth2/authorization/google", "/login/oauth2/code/google").permitAll()
+                        .requestMatchers("/signup/google").hasRole("GOOGLE_PENDING")
                         .requestMatchers("/staff", "/staff/**").hasRole(ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/csrf").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/csrf").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/signup").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/users/me", "/accounts/me", "/accounts/me/{accountId}").hasRole(CUSTOMER)
                         .requestMatchers(HttpMethod.GET, "/accounts/user-{id}")
                         .access((authentication, context) -> {
@@ -52,12 +81,31 @@ public class SecurityConfig {
                         .anyRequest().denyAll())
                 .addFilterBefore(new LoginRateLimitFilter(loginLimit, Clock.systemUTC()), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionFixation(fixation -> fixation.changeSessionId()))
-                .logout(logout -> logout.invalidateHttpSession(true).clearAuthentication(true).deleteCookies("JSESSIONID"))
-                .httpBasic(Customizer.withDefaults())
+                .requestCache(cache -> cache.disable())
+                .exceptionHandling(errors -> errors
+                        .defaultAuthenticationEntryPointFor((request, response, ex) -> SecurityResponses.error(response, 401,
+                                "AUTHENTICATION_REQUIRED", "Sign in to continue. Your session may have expired."), request -> true)
+                        .accessDeniedHandler((request, response, ex) -> SecurityResponses.error(response, 403,
+                                ex instanceof CsrfException ? "INVALID_CSRF_TOKEN" : "ACCESS_DENIED",
+                                ex instanceof CsrfException ? "Refresh the CSRF token and try again." : "Access denied.")))
+                .logout(logout -> logout.invalidateHttpSession(true).clearAuthentication(true).deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(204)))
+                .httpBasic(basic -> basic.authenticationEntryPoint((request, response, ex) ->
+                        SecurityResponses.error(response, 401, "INVALID_CREDENTIALS", "Invalid username or password.")))
                 .formLogin(form -> form.permitAll().successHandler((request, response, authentication) -> {
+                    if (SecurityResponses.wantsJson(request)) {
+                        response.setStatus(204);
+                        return;
+                    }
                     String destination = authentication.getPrincipal() instanceof CustomerPrincipal customer
                             ? "/accounts/me" : "/users";
                     response.sendRedirect(request.getContextPath() + destination);
+                }).failureHandler((request, response, ex) -> {
+                    if (SecurityResponses.wantsJson(request)) {
+                        SecurityResponses.error(response, 401, "INVALID_CREDENTIALS", "Invalid username or password.");
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/login?error");
+                    }
                 }))
                 .build();
     }
@@ -108,6 +156,9 @@ public class SecurityConfig {
             }
             var customer = userRepository.findByUsername(login)
                     .orElseThrow(() -> new UsernameNotFoundException("Unknown user"));
+            if (customer.getGoogleSubject() != null || customer.getPassword() == null) {
+                throw new UsernameNotFoundException("Use Google sign-in for this account");
+            }
             return new CustomerPrincipal(customer.getId(), customer.getUsername(), customer.getPassword());
         };
     }

@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.example.bankingapp.Auth.SecurityResponses;
 import java.io.IOException;
 import java.time.Clock;
 import java.util.HashMap;
@@ -41,13 +42,12 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
-        boolean credentials = ("POST".equals(request.getMethod()) && "/login".equals(request.getServletPath()))
+        boolean credentials = ("POST".equals(request.getMethod())
+                && ("/login".equals(request.getServletPath()) || "/auth/signup".equals(request.getServletPath())))
                 || (authorization != null && authorization.regionMatches(true, 0, "Basic ", 0, 6));
         if (credentials && !allow(request.getRemoteAddr())) {
-            response.setStatus(429);
             response.setHeader("Retry-After", "60");
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\":\"Too many authentication attempts. Try again later.\"}");
+            SecurityResponses.error(response, 429, "RATE_LIMITED", "Too many authentication or signup attempts. Try again later.");
             return;
         }
         chain.doFilter(request, response);

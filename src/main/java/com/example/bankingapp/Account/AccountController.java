@@ -50,7 +50,7 @@ public class AccountController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> changeAccount(Long id, @Valid @RequestBody AccountRequest request) {
+    public ResponseEntity<Void> changeAccount(@RequestParam @Positive Long id, @Valid @RequestBody AccountRequest request) {
 
         accountService.changeAccount(id,request);
         return ResponseEntity.noContent().build();

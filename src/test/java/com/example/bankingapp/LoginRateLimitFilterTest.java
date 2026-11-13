@@ -10,6 +10,20 @@ import static org.mockito.Mockito.*;
 
 class LoginRateLimitFilterTest {
     @Test
+    void publicSignupIsRateLimitedWithStructuredErrors() throws Exception {
+        var filter = new LoginRateLimitFilter(1, Clock.systemUTC());
+        var request = new MockHttpServletRequest("POST", "/auth/signup");
+        request.setServletPath("/auth/signup");
+        filter.doFilter(request, new MockHttpServletResponse(), (req, res) -> { });
+        var blocked = new MockHttpServletResponse();
+        filter.doFilter(request, blocked, (req, res) -> fail("Signup should be throttled"));
+        assertEquals(429, blocked.getStatus());
+        assertEquals("application/problem+json", blocked.getContentType());
+        assertTrue(blocked.getContentAsString().contains("RATE_LIMITED"));
+        assertEquals("60", blocked.getHeader("Retry-After"));
+    }
+
+    @Test
     void limitsBasicAndFormAttemptsTogetherAndRecoversAfterWindow() throws Exception {
         var clock = mock(Clock.class);
         when(clock.millis()).thenReturn(0L);

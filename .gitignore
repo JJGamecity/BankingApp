@@ -32,5 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
-# Local credentials (never commit this file)
-/src/main/resources/application-local.properties
+# Local secrets; keep only the safe example in Git.
+.env
+.env.*
+!.env.example

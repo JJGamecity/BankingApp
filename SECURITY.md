@@ -1,20 +1,24 @@
 # Roles and account access
 
-## Local setup without environment variables
+## Local setup with an ignored dotenv file
 
-Run the application normally from your IDE. `application.properties` sets the
-default Spring profile to `local`, which automatically loads the Git-ignored
-`src/main/resources/application-local.properties`. No environment variables or
-manual profile selection are required for local development.
+Run the application normally from your IDE with the project root as the working
+directory. Spring dotenv's `springboot4-dotenv` integration automatically loads
+the Git-ignored `.env` beside `pom.xml`. The tracked application properties use
+placeholders; `application-local.properties` contains only non-secret local settings.
+No manual shell/IDE environment variables are required.
 
 That private file contains the database password. Fill in
-`bank.security.admin.username` and `bank.security.admin.password` there to enable
+`BANK_SECURITY_ADMIN_USERNAME` and `BANK_SECURITY_ADMIN_PASSWORD` there to enable
 your initial admin. Optional representative credentials can also go there;
 otherwise use the admin-only `POST /staff` command. Leave both fields blank to
-disable a configured login. Never force-add this file to Git or share it.
+disable a configured login. Representative keys are `BANK_SECURITY_REP_USERNAME`
+and `BANK_SECURITY_REP_PASSWORD`. Never force-add `.env` to Git or share it.
 
 An explicitly selected profile such as `prod` replaces the default `local`
-profile, so it does not automatically load the local credentials.
+profile, but dotenv loading is independent of profiles. Real environment variables
+take precedence. Disable dotenv with `-Dspringdotenv.enabled=false` or
+`SPRINGDOTENV_ENABLED=false` on deployments that use managed environment variables.
 
 The configured staff login has the **Bank Representative** role (internally
 `BANK_REPRESENTATIVE`, with Spring Security authority `ROLE_BANK_REPRESENTATIVE`).
@@ -27,7 +31,7 @@ and bank accounts. Spring Security provides the public login page.
 | ADMIN | All application commands, including creating staff |
 | CUSTOMER | Own profile at `/users/me`; own accounts at `/accounts/me`, `/accounts/me/{accountId}`, or `/accounts/user-{id}` |
 
-All signed-in users can retrieve `/csrf` for authentication support. Customers
+Anyone can retrieve `/csrf` to establish a session and bootstrap login/signup CSRF protection. Customers
 cannot list users, view another customer's accounts, or create/update users or
 accounts. Their database ID is attached to the authenticated principal and checked
 before the account controller runs. Roles cannot be supplied in a customer request.
@@ -45,8 +49,9 @@ Unowned and nonexistent accounts both return `404`; invalid IDs return `400`.
 Customer account lists are ordered by account ID. No customer write permissions
 are added by these endpoints.
 
-Customers sign in with the username and password of a customer record created by
-staff. New and replaced passwords are stored as BCrypt hashes. Existing plaintext
+Customers sign in with a record created by staff or public `POST /auth/signup`.
+Public signup always creates a CUSTOMER, requires names and a DOB showing an age of at least 18, and never
+accepts a credit score or privileged role. New and replaced passwords are stored as BCrypt hashes. Existing plaintext
 passwords must be reset through the staff user replacement command before customer
 login will work; they are not accepted as a fallback. Staff usernames take
 precedence over customer usernames. New staff and customer creation/replacement
@@ -65,8 +70,8 @@ environment variables. The password is BCrypt-encoded when the in-memory staff
 login is created. These configured logins remain in memory for initial access.
 Additional staff logins are stored in PostgreSQL's `staff_accounts` table;
 customer logins use the existing `users` table. Staff roles are stored as strings
-and passwords as BCrypt hashes. `ddl-auto=update` replaces the old `create` setting
-so restarting the application no longer recreates its tables.
+and passwords as BCrypt hashes. Flyway manages versioned schema changes and
+Hibernate uses `ddl-auto=validate`; startup does not recreate tables.
 
 ## Create a staff login
 
@@ -99,7 +104,7 @@ roles return `400`. Representatives and customers receive `403`, even if they
 submit `"role": "ADMIN"`. Newly created staff can immediately log in with their
 own credentials. Multiple staff accounts can coexist.
 
-Configure the first admin using the environment variables above, then use that
+Configure the first admin using the `.env` entries above, then use that
 login to create additional database-backed admins. The configured admin remains
 available while those settings remain configured. No staff password reset,
 deletion, or role-change endpoint is included yet.
@@ -107,7 +112,7 @@ deletion, or role-change endpoint is included yet.
 ## Configuration and hardening
 
 Passwords are no longer stored as literals in the tracked `application.properties`.
-Local credentials are configured in the ignored `application-local.properties`
+Local credentials are configured in the ignored root `.env`
 described above. Standard Spring environment overrides remain optional, not
 required. Do not commit real values. Removing secrets from the tracked file does not erase
 older Git history; rotate any credentials previously shared or committed.
@@ -121,7 +126,7 @@ Staff creation records the actor and timestamp in `staff_accounts.created_by`
 and `created_at`, in the same transaction as the account. Older rows may have null
 values. This is creation attribution, not an immutable or comprehensive audit log.
 
-Credential-bearing requests (form login and every HTTP Basic request) are limited
+Credential-bearing requests (form login, public signup, and every HTTP Basic request) are limited
 to 30 per remote IP per minute. Exceeding the limit returns 429 and `Retry-After`.
 Use browser/session authentication for ongoing work. The limit can be adjusted
 with `bank.security.login-attempts-per-minute`. It is held in bounded process memory,
@@ -129,9 +134,41 @@ resets on restart, and does not coordinate multiple instances. It ignores incomi
 forwarding headers; behind a proxy, configure a trusted edge rate limiter instead
 of trusting arbitrary `X-Forwarded-For` values.
 
-Sessions expire after 15 idle minutes, use HttpOnly and SameSite=Strict cookies,
+Sessions expire after 15 idle minutes, use HttpOnly and SameSite=Lax cookies,
 rotate their ID at login, and are invalidated on logout. CSRF remains enabled.
 These follow Spring Security's [session management guidance](https://docs.spring.io/spring-security/reference/servlet/authentication/session-management.html).
+
+## Google signup
+
+Google OAuth is opt-in (`bank.security.google.enabled=true`) with the client ID
+and secret in the ignored `.env` file for development. Spring's OIDC
+login flow handles authorization state, nonce, token signature, issuer and audience
+validation. Only verified Google emails and current ID tokens are accepted. The
+application stores the stable Google subject in a unique `users.google_subject`
+column and does not automatically link accounts by matching email.
+
+A Google login initially receives only `GOOGLE_PENDING`, allowing `/auth/me`, the CSRF
+endpoint and required signup form, without customer or staff banking access. Completing the form
+requires username, first name, last name and a DOB showing an age of at least 18; untrusted form data cannot
+set email, Google subject, password, role or credit score. A CUSTOMER session is
+issued only after the database save succeeds, with session ID rotation and a new
+CSRF token. Google-only accounts cannot authenticate with a local password.
+Returning users are looked up by Google subject. Google signup never creates staff
+or bank accounts. Credit score starts unset; DOB is self-reported, not identity
+verification. All rendered Google/form values are HTML-escaped.
+
+SameSite=Lax is required for the top-level GET callback from Google to carry the
+application session. CSRF protection remains enabled for profile completion and
+all other writes. Production uses Secure cookies and HTTPS. Fast tests simulate
+verified principals; PostgreSQL integration tests additionally exercise the HTTP
+code exchange and RSA-signed tokens against a local OIDC provider. A real Google
+round trip requires your registered OAuth client and a manual browser smoke test.
+
+Flyway V1 adds the Google identity column and keeps `password` and `credit_score`
+nullable for Google-only customers. V2 enforces case-insensitive email uniqueness
+and a database-backed username namespace shared by customers and staff. Conflicting
+legacy records stop migration for review; migrations do not silently merge identities.
+See the README migration instructions before adopting an existing production schema.
 
 ## Production profile
 
@@ -140,19 +177,13 @@ Provision and test the schema and create a database ADMIN before enabling
 this profile; the database credentials are the way to sign in. The profile requires
 TLS with `BANK_TLS_KEYSTORE` (PKCS12 keystore location) and
 `BANK_TLS_KEYSTORE_PASSWORD`, sets Secure session cookies, disables Swagger, and
-validates the schema instead of automatically modifying it. Local development
-still uses `ddl-auto=update`.
-
-For an existing staff table, a reviewed PostgreSQL migration must include:
-
-```sql
-ALTER TABLE staff_accounts ADD COLUMN IF NOT EXISTS created_by varchar(255);
-ALTER TABLE staff_accounts ADD COLUMN IF NOT EXISTS created_at timestamp(6) with time zone;
-```
+uses Flyway migrations followed by Hibernate schema validation, as local development
+does. Flyway V1 includes the staff creator/timestamp columns. Baseline-on-migrate is
+off by default; the tracked local profile opts in at version 0 for schema adoption.
 
 The production profile is a starting point, not enterprise certification. Before
 using real banking data, integrate an identity provider with MFA, distributed
-rate limits, managed schema migrations, a least-privilege database account,
+rate limits, reviewed migration deployment, a least-privilege database account,
 centralized tamper-resistant audit logs, credential rotation/recovery, and tested
 backups. Those systems have not been configured by this change.
 
@@ -161,7 +192,7 @@ Basic authentication with the same credentials.
 
 CSRF protection remains enabled. Before sending POST, PUT, PATCH, or DELETE:
 
-1. Send an authenticated `GET /csrf` and retain its session cookie.
+1. Send `GET /csrf` and retain its session cookie; authentication is not required.
 2. Read `headerName` and `token` from the JSON response.
 3. Send that header and token, the same cookie, and authentication with the write
    request. Fetch a fresh token after logging in or out.
