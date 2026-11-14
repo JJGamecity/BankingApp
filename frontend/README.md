@@ -1,4 +1,4 @@
-# BankingApp frontend
+# JJBanking frontend
 
 React + Vite, with Lucide icons and custom CSS. All visual styling lives in src/styles.css; Tailwind is not required.
 

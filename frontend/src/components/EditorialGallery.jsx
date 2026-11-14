@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const defaultScenes = [
   {
-    image: "/images/everyday-banking.svg?v=light-blue-2",
+    image: "/images/everyday-banking.svg?v=jjbanking",
     alt: "A light blue banking card beside a payment terminal on a pale blue background",
     label: "YOUR EVERYDAY, SIMPLIFIED",
     title: "A little more ease. Every day.",

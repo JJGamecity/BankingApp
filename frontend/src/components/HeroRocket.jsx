@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { aimRocket, ROCKET_WIDTH, ROCKET_HEIGHT } from "../lib/rocket.js";
 
 export default function HeroRocket() {
   const layer = useRef(null);
@@ -6,7 +7,6 @@ export default function HeroRocket() {
   const sprite = useRef(null);
   useEffect(() => {
     const root = layer.current;
-    const hero = root.parentElement.querySelector(".home-hero");
     const context = canvas.current.getContext("2d");
     if (!context) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -14,31 +14,67 @@ export default function HeroRocket() {
     let frame = 0,
       lastTime = 0;
     let active = false;
+    let fadeTimer = null;
+    let pointer = null;
     let x = 0,
       y = 0,
       targetX = 0,
       targetY = 0,
       angle = -Math.PI / 2;
     let particles = [];
+    let emissionElapsed = 0;
+    let emissionDistance = 0;
+    const emissionInterval = 300;
     let width = 0,
       height = 0;
+    function clampTarget() {
+      const maxY = Math.max(
+        30,
+        Math.min(420, window.innerHeight * 0.55, height - 30),
+      );
+      targetX = Math.max(30, Math.min(width - 30, targetX));
+      targetY = Math.max(30, Math.min(maxY, targetY));
+      x = Math.max(30, Math.min(width - 30, x));
+      y = Math.max(30, Math.min(maxY, y));
+    }
     function stop() {
+      clearTimeout(fadeTimer);
+      fadeTimer = null;
       cancelAnimationFrame(frame);
       frame = 0;
       lastTime = 0;
       active = false;
       particles = [];
+      emissionElapsed = 0;
+      emissionDistance = 0;
       root.dataset.flying = "false";
       context.clearRect(0, 0, width, height);
     }
+    function fadeOut() {
+      if (root.dataset.flying !== "true") return;
+      cancelAnimationFrame(frame);
+      frame = 0;
+      lastTime = 0;
+      root.dataset.flying = "false";
+      fadeTimer = setTimeout(stop, 400);
+    }
+    function leave() {
+      pointer = null;
+      fadeOut();
+    }
+    function onScroll() {
+      if (pointer) move(pointer);
+    }
     function resize() {
-      stop();
-      width = window.innerWidth;
-      height = window.innerHeight;
+      width = root.clientWidth;
+      height = root.clientHeight;
+      clampTarget();
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
       canvas.current.width = width * ratio;
       canvas.current.height = height * ratio;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      // Resizing should not dismiss an already active decoration either.
+      if (active && !frame) frame = requestAnimationFrame(draw);
     }
     function draw(time) {
       frame = 0;
@@ -49,40 +85,46 @@ export default function HeroRocket() {
       const distance = Math.hypot(dx, dy);
       const travel = Math.max(0, distance - 24) * (1 - Math.exp(-dt / 115));
       if (distance > 25) {
-        const desiredAngle = Math.atan2(dy, dx);
-        const turn = Math.atan2(
-          Math.sin(desiredAngle - angle),
-          Math.cos(desiredAngle - angle),
-        );
-        angle += turn * (1 - Math.exp(-dt / 70));
         x += (dx / distance) * travel;
         y += (dy / distance) * travel;
       }
-      sprite.current.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) rotate(${angle + Math.PI / 2}rad)`;
-      if (travel > 0.15) {
-        const amount = Math.min(4, Math.max(1, Math.ceil(travel / 5)));
-        for (let i = 0; i < amount; i++) {
-          particles.push({
-            x: x - Math.cos(angle) * (17 + i * 3),
-            y: y - Math.sin(angle) * (17 + i * 3),
-            vx: -Math.cos(angle) * 0.035 + (Math.random() - 0.5) * 0.022,
-            vy: -Math.sin(angle) * 0.035 + (Math.random() - 0.5) * 0.022,
-            age: 0,
-            life: 450 + Math.random() * 250,
-            radius: 1.8 + Math.random() * 1.5,
-          });
-        }
+      const pose = aimRocket(x, y, targetX, targetY, angle);
+      angle = pose.angle;
+      sprite.current.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) rotate(${pose.rotation}rad)`;
+      emissionElapsed = Math.min(emissionInterval, emissionElapsed + dt);
+      if (distance > 25) emissionDistance += travel;
+      // Widely spaced dots: at most one per 300ms and 24px of movement.
+      if (
+        distance > 25 &&
+        travel > 0.05 &&
+        emissionElapsed >= emissionInterval &&
+        emissionDistance >= 24
+      ) {
+        particles.push({
+          x: pose.nozzle.x,
+          y: pose.nozzle.y,
+          vx: -Math.cos(angle) * 0.015,
+          vy: -Math.sin(angle) * 0.015,
+          age: 0,
+          life: 1500 + Math.random() * 300,
+          radius: 2.3 + Math.random() * 0.5,
+        });
+        emissionElapsed = 0;
+        emissionDistance = 0;
       }
-      particles = particles.filter((p) => p.age < p.life).slice(-100);
+      particles = particles.filter((p) => p.age < p.life).slice(-40);
       context.clearRect(0, 0, width, height);
       for (const p of particles) {
         p.age += dt;
         p.x += p.vx * dt;
         p.y += p.vy * dt;
-        const fade = Math.max(0, 1 - p.age / p.life);
+        // Hold the bright dot for half its life, then fade without becoming smoke.
+        const fade = Math.max(0, Math.min(1, (1 - p.age / p.life) * 2));
         context.beginPath();
-        context.arc(p.x, p.y, p.radius + p.age / 180, 0, Math.PI * 2);
-        context.fillStyle = `rgba(255,255,255,${fade * 0.65})`;
+        context.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        context.shadowColor = `rgba(255,255,255,${fade * 0.5})`;
+        context.shadowBlur = 4;
+        context.fillStyle = `rgba(255,255,255,${fade * 0.95})`;
         context.fill();
       }
       if (active && (distance > 25 || particles.length))
@@ -92,25 +134,41 @@ export default function HeroRocket() {
     function move(event) {
       if (reduced.matches || !mouse.matches || event.pointerType !== "mouse")
         return;
-      const bounds = hero.getBoundingClientRect();
-      if (event.clientY > bounds.bottom || bounds.bottom < 0) {
-        stop();
+      // Use coordinates within the page's top decoration, not the viewport.
+      // Fade at the edge instead of leaving the decoration visible indefinitely.
+      pointer = {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        pointerType: event.pointerType,
+      };
+      const bounds = root.getBoundingClientRect();
+      if (
+        event.clientX < bounds.left ||
+        event.clientX > bounds.right ||
+        event.clientY < bounds.top ||
+        event.clientY > bounds.bottom
+      ) {
+        fadeOut();
         return;
       }
-      targetX = event.clientX;
-      targetY = event.clientY;
+      clearTimeout(fadeTimer);
+      fadeTimer = null;
+      targetX = event.clientX - bounds.left;
+      targetY = event.clientY - bounds.top;
+      clampTarget();
       if (!active) {
         x = targetX - 50;
         y = targetY + 35;
+        clampTarget();
         active = true;
-        root.dataset.flying = "true";
       }
+      root.dataset.flying = "true";
       if (!frame) frame = requestAnimationFrame(draw);
     }
     resize();
     window.addEventListener("pointermove", move, { passive: true });
-    document.documentElement.addEventListener("pointerleave", stop);
-    window.addEventListener("scroll", stop, { passive: true });
+    document.documentElement.addEventListener("pointerleave", leave);
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", resize);
     window.addEventListener("blur", stop);
     document.addEventListener("visibilitychange", stop);
@@ -119,8 +177,8 @@ export default function HeroRocket() {
     return () => {
       stop();
       window.removeEventListener("pointermove", move);
-      document.documentElement.removeEventListener("pointerleave", stop);
-      window.removeEventListener("scroll", stop);
+      document.documentElement.removeEventListener("pointerleave", leave);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", resize);
       window.removeEventListener("blur", stop);
       document.removeEventListener("visibilitychange", stop);
@@ -134,10 +192,11 @@ export default function HeroRocket() {
       <img
         ref={sprite}
         className="rocket-flight-sprite"
-        src="/images/blue-rocket.svg?v=white-exhaust"
+        src="/images/blue-rocket.svg?v=nozzle-dots"
         alt=""
-        width="42"
-        height="48"
+        width={ROCKET_WIDTH}
+        height={ROCKET_HEIGHT}
+        style={{ width: ROCKET_WIDTH, height: ROCKET_HEIGHT }}
         draggable="false"
       />
     </div>

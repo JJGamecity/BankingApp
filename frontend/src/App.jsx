@@ -86,7 +86,7 @@ export default function App() {
       "/accounts/new": "Open an account",
       "/staff/new": "Create staff",
     };
-    document.title = `${names[path] || "Welcome"} | BankingApp`;
+    document.title = `${names[path] || "Welcome"} | JJBanking`;
   }, [path]);
 
   async function logout() {

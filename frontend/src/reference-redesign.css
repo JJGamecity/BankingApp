@@ -1,14 +1,69 @@
 /* Dark visual stage, luminous sculptural artwork, and horizontal oval tabs. */
+.bank-home .home-section-heading > p {
+  max-width: 360px;
+}
+.bank-home .home-cta-description {
+  max-width: 490px;
+  font-size: 13px;
+  line-height: 1.85;
+  color: #aebfdd;
+  margin: 20px 0 0;
+}
+.bank-home .home-feature-strip > div {
+  align-items: flex-start;
+}
+.bank-home .home-feature-strip > div > svg {
+  margin-top: 3px;
+}
+.bank-home {
+  position: relative;
+  isolation: isolate;
+}
+.bank-home > header,
+.bank-home > main,
+.bank-home > footer {
+  position: relative;
+  z-index: auto;
+}
+/* Keep section backgrounds in the base layer, the rocket in the middle,
+   and actual content above it. A stacking context on main hid the rocket. */
+.bank-home > .home-header {
+  z-index: auto;
+}
+.bank-home > header > *,
+.bank-home > footer > *,
+.bank-home .home-feature-strip > div,
+.bank-home .home-section-heading,
+.bank-home .home-account-tabs,
+.bank-home .home-account-copy,
+.bank-home .home-account-preview > img,
+.bank-home .planner-intro > *,
+.bank-home .planner-inputs,
+.bank-home .planner-results,
+.bank-home .home-cta > * {
+  position: relative;
+  z-index: 2;
+}
+.bank-home .home-header nav.is-open {
+  z-index: 3;
+}
 .rocket-flight-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(100vh, 480px);
+  z-index: 1;
   pointer-events: none;
   overflow: hidden;
   visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 350ms ease,
+    visibility 0s linear 350ms;
 }
 .rocket-flight-layer[data-flying="true"] {
   visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
 }
 .rocket-flight-layer canvas {
   position: absolute;
@@ -20,8 +75,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 42px;
-  height: 48px;
+  transform-origin: 50% 50%;
   user-select: none;
   will-change: transform;
   filter: drop-shadow(0 2px 5px #97c6ff50);
@@ -33,12 +87,12 @@
 }
 .bank-home .home-hero {
   position: relative;
-  isolation: isolate;
+  isolation: auto;
 }
 .bank-home .home-hero-copy,
 .bank-home .home-hero > .showcase {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .bank-home #possibilities {
@@ -1136,6 +1190,9 @@ body {
   }
   .home-header nav.is-open {
     display: flex;
+  }
+  .bank-home .home-header nav.is-open {
+    position: absolute;
   }
   .home-header nav.is-open > a {
     display: flex;

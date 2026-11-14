@@ -8,7 +8,7 @@ export default function BankingShowcase() {
       </div>
       <div className="showcase-screen">
         <header>
-          <strong>banking.</strong>
+          <strong>JJBanking</strong>
           <span>ILLUSTRATIVE PREVIEW</span>
           <b>J</b>
         </header>

@@ -102,7 +102,7 @@ export default function AuthPage({ onSession, initialMessage, mode }) {
           </div>
           <div className="presentation-card">
             <div className="card-top">
-              <span>banking.</span>
+              <span>JJBanking</span>
               <Layers3 />
             </div>
             <div className="chip" />

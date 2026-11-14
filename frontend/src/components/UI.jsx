@@ -11,7 +11,7 @@ export function Brand() {
       <span className="brand-icon">
         <Landmark size={22} />
       </span>
-      banking<span className="brand-dot">.</span>
+      JJBanking
     </div>
   );
 }

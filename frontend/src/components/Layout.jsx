@@ -8,6 +8,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { Brand } from "./UI.jsx";
+import SiteFooter from "./SiteFooter.jsx";
 import { paths, followLink } from "../lib/navigation.js";
 
 export default function Layout({
@@ -83,12 +84,7 @@ export default function Layout({
         </header>
         <main className="workspace">
           {children}
-          <footer className="workspace-footer">
-            <span>
-              banking. <span className="muted">A little more possibility.</span>
-            </span>
-            <span>Made for your everyday ↗</span>
-          </footer>
+          <SiteFooter session={session} />
         </main>
       </div>
     </div>

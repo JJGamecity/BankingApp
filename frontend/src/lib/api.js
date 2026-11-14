@@ -37,7 +37,7 @@ export async function request(
   } catch (error) {
     if (error.name === "AbortError") throw error;
     throw new Error(
-      "We cannot connect to your bank right now. Check that BankingApp is running on port 5050 and try again.",
+      "We cannot connect to your bank right now. Check that JJBanking is running on port 5050 and try again.",
     );
   }
   if (response.status === 204) return null;

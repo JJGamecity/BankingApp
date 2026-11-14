@@ -13,6 +13,7 @@ import {
 import { Brand } from "../components/UI.jsx";
 import BankingShowcase from "../components/BankingShowcase.jsx";
 import HeroRocket from "../components/HeroRocket.jsx";
+import SiteFooter from "../components/SiteFooter.jsx";
 import { followLink } from "../lib/navigation.js";
 import { projectSavings, SAVINGS_RATE_LABEL } from "../lib/savings.js";
 import "./welcome.css";
@@ -23,8 +24,8 @@ const accounts = [
     icon: Wallet,
     tag: "FOR THE EVERYDAY",
     title: "Life happens. Stay in step.",
-    text: "Keep everyday money in focus with a clear view of your balance and account details.",
-    image: "/images/everyday-banking.svg?v=light-blue-2",
+    text: "Give your everyday money a place that is easy to keep track of. Check your available balance, find your account details, and see how your checking account fits alongside your savings—all from one organized dashboard.",
+    image: "/images/everyday-banking.svg?v=jjbanking",
     alt: "Light blue banking card and payment terminal on a pale blue background",
     features: [
       "Your everyday balance at a glance",
@@ -37,7 +38,7 @@ const accounts = [
     icon: Sprout,
     tag: "FOR YOUR NEXT CHAPTER",
     title: "Small steps. Bigger possibilities.",
-    text: "Give your next adventure, a new home, or a little peace of mind a place to grow.",
+    text: "Whether you are planning your next adventure or setting money aside for the unexpected, give those plans a dedicated place in your financial picture. Explore the planner below to see how regular deposits and illustrative interest could add up over time.",
     image: "/images/green-architecture.jpg",
     alt: "Green planted balconies on a modern building",
     features: [
@@ -51,7 +52,7 @@ const accounts = [
     icon: Layers3,
     tag: "FOR THE BIGGER PICTURE",
     title: "Make room for more.",
-    text: "Explore another way to organize your money. A bank representative can help you find your fit.",
+    text: "Bring another part of your financial picture into focus with a money market account. View it alongside your other accounts, then speak with a bank representative about eligibility, rates, and account terms to decide whether it fits your plans.",
     image: "/images/alpine-lake.jpg",
     alt: "Mountain lake framed by green alpine forests",
     features: [
@@ -138,8 +139,10 @@ export default function WelcomePage() {
               <em>on your money.</em>
             </h1>
             <p>
-              For the everyday moments and the someday plans. A simpler way to
-              feel at home with your money.
+              Bring your everyday balances and future plans into one clearer
+              picture. Explore your accounts, see where your money sits, and try
+              out savings scenarios—all in a space designed to make your next
+              step easier to understand.
             </p>
             <div className="home-actions">
               <AppLink className="home-button home-button-dark" to="/signup">
@@ -158,13 +161,21 @@ export default function WelcomePage() {
         </section>
         <section className="home-feature-strip" aria-label="Banking features">
           {[
-            [Wallet, "All together.", "Your accounts, in one clear view."],
+            [
+              Wallet,
+              "All together.",
+              "See your available balances side by side, then open an account to find the details you need.",
+            ],
             [
               ShieldCheck,
               "Feel at home.",
-              "A personal space for your banking.",
+              "Keep your profile and accounts within reach, with a balance-hiding control for a little more privacy on your screen.",
             ],
-            [Sprout, "Look ahead.", "More room for your next chapter."],
+            [
+              Sprout,
+              "Look ahead.",
+              "Turn a savings idea into an illustration. Adjust your monthly deposit and timeframe to explore how the numbers change.",
+            ],
           ].map(([Icon, title, text]) => (
             <div key={title}>
               <Icon size={25} />
@@ -188,9 +199,9 @@ export default function WelcomePage() {
               </h2>
             </div>
             <p>
-              Different plans. The same thoughtful approach.
-              <br />
-              Find a place for what matters to you.
+              Everyday spending, money for later, or a broader financial plan:
+              explore each account type and find out what to discuss with a bank
+              representative before opening one.
             </p>
           </div>
           <div
@@ -250,7 +261,8 @@ export default function WelcomePage() {
                 Create your profile <ArrowUpRight size={18} />
               </AppLink>
               <small>
-                Contact a bank representative to open an account after signup.
+                Creating a profile is your first step. A bank representative can
+                then help you open an account and explain its terms.
               </small>
             </div>
             <img
@@ -269,8 +281,11 @@ export default function WelcomePage() {
                 Your next chapter. <em>In numbers.</em>
               </h2>
               <p>
-                Choose a monthly deposit and a timeframe. See what you put in,
-                the estimated interest, and the total you could build.
+                Start with an amount you could put aside each month, then choose
+                how long you want to save. The planner separates your deposits
+                from estimated interest, helping you see both what you
+                contribute and the total you could build under the illustrated
+                rate.
               </p>
             </div>
             <img
@@ -286,7 +301,12 @@ export default function WelcomePage() {
             <div className="planner-inputs">
               <span className="home-eyebrow">YOUR POSSIBILITY PLANNER</span>
               <h3>See what adds up.</h3>
-              <p>A small habit today. Something to look forward to.</p>
+              <p>
+                Move either slider to explore a different plan. Your estimated
+                interest, total balance, and growth chart update together, so
+                you can compare a smaller monthly habit with a longer saving
+                period.
+              </p>
               <div className="savings-rate">
                 <Sprout size={23} />
                 <div>
@@ -419,17 +439,18 @@ export default function WelcomePage() {
               <br />
               <em>A little more you.</em>
             </h2>
+            <p className="home-cta-description">
+              Create your customer profile to start exploring your banking
+              workspace. Once an account is opened, your balances, account
+              details, and Money Compass come together in one place.
+            </p>
           </div>
           <AppLink className="home-button" to="/signup">
             Let's get started <ArrowUpRight size={20} />
           </AppLink>
         </section>
       </main>
-      <footer className="home-footer">
-        <Brand />
-        <span>A simpler relationship with your money.</span>
-        <a href="#">Back to top ↑</a>
-      </footer>
+      <SiteFooter landing />
     </div>
   );
 }
