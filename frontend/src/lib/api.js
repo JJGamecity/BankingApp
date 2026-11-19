@@ -21,14 +21,14 @@ export async function request(
   }
 
   let response;
+  // A first request can wake both the Java container and the database.
+  const timeout = AbortSignal.timeout(60000);
   try {
     response = await fetch(`${API_URL}${path}`, {
       method,
       headers,
       credentials: "include",
-      signal: signal
-        ? AbortSignal.any([signal, AbortSignal.timeout(10000)])
-        : AbortSignal.timeout(10000),
+      signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
       body: body
         ? form
           ? new URLSearchParams(body)
