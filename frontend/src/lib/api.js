@@ -1,4 +1,5 @@
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5050";
+export const API_URL = import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? `${window.location.protocol}//${window.location.hostname}:5050` : "/api");
 let csrfToken = null;
 
 export function resetCsrf() {
@@ -37,7 +38,7 @@ export async function request(
   } catch (error) {
     if (error.name === "AbortError") throw error;
     throw new Error(
-      "We cannot connect to your bank right now. Check that JJBanking is running on port 5050 and try again.",
+      "We cannot connect to your bank right now. Please try again in a moment.",
     );
   }
   if (response.status === 204) return null;

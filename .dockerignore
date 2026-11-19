@@ -1,0 +1,15 @@
+**
+!Dockerfile
+!pom.xml
+!mvnw
+!.mvn/
+!.mvn/wrapper/
+!.mvn/wrapper/maven-wrapper.properties
+!src/
+!src/main/
+!src/main/**
+**/.env*
+**/*.p12
+**/*.jks
+**/*.pem
+**/*.key
