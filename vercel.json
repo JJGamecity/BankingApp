@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "backend": { "root": ".", "runtime": "container", "entrypoint": "Dockerfile" },
+    "frontend": { "root": "frontend", "framework": "vite" }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": { "service": "backend" } },
+    { "source": "/(login|signup|overview|accounts|profile|customers|accounts/new|staff/new)", "destination": { "service": "frontend", "path": "/index.html" } },
+    { "source": "/(.*)", "destination": { "service": "frontend" } }
+  ]
+}
